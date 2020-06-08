@@ -26,10 +26,11 @@ plot(vtHexp,'k');
 ##### Criado o arquivo: ```fDrawSector.m```.
 
 #### Passo 02
-* Para testar a função ```fDrawSector``` criada no ponto anterior, é necessário setar um valor default na chamada da função, que foi: 100,100+50*i.  
+* Para testar a função ```fDrawSector``` criada no passo anterior, é necessário setar um valor default na chamada da função, que foi: 100,100+50*i.  
 Este valor pode ser inserido direto no run ou ainda ser inserido dentro da chamada da função no console, dessa forma: ```fDrawSector(100,100+50*i)```.  
 ![alt text](Prática_01/hexágono_centrado_no_ponto_(100,50).png)  
 O hexágono foi validado.
+##### Criado o arquivo: hexágono_centrado_no_ponto_(100,50).png.
 
 #### Passo 03
 * A função ```fDrawDeploy.m``` foi criada. Ela é responsável por desenhar o grid celular. 
@@ -48,7 +49,7 @@ end
 %DESENHA UM GRID CELULAR
 %grid é uma estrutura geométrica constituída por eixos (comumente horizontais e verticais)
 ```
-##### Foram criados os arquivos: ```fDrawDeploy.m``` e hexágono_centrado_no_ponto_(100,50).png.
+##### Criado o arquivo: ```fDrawDeploy.m```.
 
 #### Passo 04
 * O código em ```handson1_P1_1.m``` foi degubado e comentado para melhor entendimento.
