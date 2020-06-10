@@ -695,23 +695,305 @@ end
 ##### Criado o arquivo: ```fDrawDeploy.m```.
 
 #### Passo 03
-* Foi criado uma chamada para a função ```fCorrShadowing```, a partir de uma mudança no código que estava sendo trabalhado. A partir desta função, foram criados oito 
+* Foi criado uma chamada para a função ```fCorrShadowing```, a partir de uma mudança no código que estava sendo trabalhado. A partir desta função, foram criados oito mapas de atenuação de sombreamento (sete para as ERBs e um comum).
+* O valor da variável ```dAlphaCorr``` foi usada para controlar a correlação do sombreamento entre ERBs.
+* É importante fazer algumas observações que foram feitas:
+    - (i) Não tem a definição do dAlphaCorr anteriormente, portante é necessário definir aqui.
+    - (ii) ```mtPoint```s também não existe, mas ela é a matriz de números complexos com os pontos de medição, anteriormente, essa matriz era representada pela variável```mtPontosMedicao```. 
+    - (iii) Essa função precisa ficar na pasta de trabalho do Matlab, e.g. ```C:\Program Files\MATLAB\MATLAB Production Server\R2015a\bin```.
+    Com essas alterações, é possível fazer a chamada da função na Command Window: ```fCorrShadowing(mtPontosMedicao, dShad, dAlphaCorr, dSigmaShad, dDimXOri, dDimYOri)```.
+```
+%%file fCorrShadowing.m
 
-# BO nessa parte
+function mtShadowingCorr = fCorrShadowing(mtPoints,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri)
+%mtShadowingCorr = fCorrShadowing(mtPontosMedicao,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri);
+%X?i,j = mtShadowingCorr --> modelo para o sombreamento correlacionado. 
+
+%INPUTS:
+%mtPoints: Matriz de números complexos com os pontos de medição = mtPontosMedicao
+%ddec = dShad: Distância de descorrelação do shadowing.
+%Xsigma --> dSigmaShad: Desvio padrão do shadowing Lognormal
+
+%p (rho) --> dAlphaCorr: Coeficiente de correlação do sombreamento entre ERBs
+%Quando rho = 1, não existe correlação do sombreamento entre diferentes ERBs (o sombreamento de cada ERB é 
+%independente). 
+%Por outro lado, quando rho = 0, o sombreamento é igual para um ponto do espçao e qualquer ERB do sistema.
+
+%dDimXOri: Dimensão X do grid em metros
+%dDimYOri: Dimensão Y do grid em metros
+
+%Matriz de pontos equidistantes de dShad em dShad
+dDimYS = ceil(dDimYOri+mod(dDimYOri,dShad));  %Ajuste de dimensão para medir toda a dimensão do grid
+dDimXS = ceil(dDimXOri+mod(dDimXOri,dShad));
+[mtPosxShad,mtPosyShad] = meshgrid(0:dShad:dDimXS, 0:dShad:dDimYS);
+mtPosShad = mtPosxShad+j*mtPosyShad;
+
+%Amostras de sombreamento para os pontos de grade
+%Matrizes com amostras de shadowing independentes
+%7 matrizes, uma cada cada ERB
+%1 matriz para o ambiente
+for iMap = 1:8 %samples - amostras
+    mtShadowingSamples(:,:,iMap) = dSigmaShad*randn(size(mtPosyShad));
+end
+
+[dSizel, dSizec] = size(mtPoints);
+for il = 1: dSizel
+    for ic = 1: dSizec
+        %Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
+        dshadPoint = mtPoints(il,ic);
+        
+        %Achar a posição do ponto de medição na matriz de shadowing correlacionado
+        dXIndexP1 = real(dshadPoint)/dShad;
+        dYIndexP1 = imag(dshadPoint)/dShad;
+        
+        %Cálculo dos demais pontos depende de:
+        % (i) se o ponto de medição é um ponto de shadowing descorrelacionado;
+        % (i) se o ponto está na borda lateral direita do grid e no canto superior do grid;
+        % (ii) se o ponto está na borda lateral direita do grid;
+        % (iii) se o ponto está na borda superior do grid;
+        % (iv)  se o ponto está no meio do grid.
+        if (mod(dXIndexP1,1) == 0 && mod(dYIndexP1,1) == 0)
+            %O ponto de medição é um ponto de grade
+            dXIndexP1 = floor(dXIndexP1)+1;
+            dYIndexP1 = floor(dYIndexP1)+1;
+            %Amostra de sombreamento do ambiente
+            dShadowingC = mtShadowingSamples(dYIndexP1,dXIndexP1,8);
+            %Amostra do sombreamento de cada ERB
+            for iMap = 1:7
+                %dShadowingERB é mtShadowingSamples, que recebe dSigmaShad (desvio padrão do shadowing lognormal)
+                dShadowingERB = mtShadowingSamples(dYIndexP1,dXIndexP1,iMap);
+                %mtShadowingCorr --> modelo para o sombreamento correlacionado
+                %dShadowingC --> uma componente do ambiente
+                %dShadowingERB --> depende do caminho entre receptor e transmissor  (ERB e ponto de medição)
+                mtShadowingCorr(il,ic,iMap) = sqrt(dAlphaCorr)*dShadowingC + sqrt(1-dAlphaCorr)*dShadowingERB;
+            end
+        %Para estabelecer o modelo em duas dimensões faz-se necessário gerar um regra de correlação espacial 
+        %entre as amostras de sombreamento utilizadas na equação acima.
+        %Mapeamento de Xu=(1?Y)[XA(1?X)+XB(X)]+(Y)[XC(1?X)+XD(X)]
+        else
+            %Índice na matriz do primeiro ponto próximo
+            dXIndexP1 = floor(dXIndexP1)+1;
+            dYIndexP1 = floor(dYIndexP1)+1;
+            if (dXIndexP1 == size(mtPosyShad,2)  && dYIndexP1 == size(mtPosyShad,1) )
+                %Ponto de medição está na borda da lateral direta do grid e no canto superior
+                % P2 - P1
+                % |    |
+                % P4 - P3
+                %
+                dXIndexP2 = dXIndexP1-1;
+                dYIndexP2 = dYIndexP1;
+                dXIndexP4 = dXIndexP1-1;
+                dYIndexP4 = dYIndexP1-1;
+                dXIndexP3 = dXIndexP1;
+                dYIndexP3 = dYIndexP1-1;
+                %
+            elseif (dXIndexP1 == size(mtPosyShad,2))
+                %Ponto de medição está na borda da lateral direta inferior do grid
+                % P4 - P3
+                % |    |
+                % P2 - P1
+                %
+                dXIndexP2 = dXIndexP1-1;
+                dYIndexP2 = dYIndexP1;
+                dXIndexP4 = dXIndexP1-1;
+                dYIndexP4 = dYIndexP1+1;
+                dXIndexP3 = dXIndexP1;
+                dYIndexP3 = dYIndexP1+1;
+            elseif (dYIndexP1 == size(mtPosyShad,1))
+                %Ponto de medição está na borda superior esquerda do grid
+                % P1 - P2
+                % |    |
+                % P3 - P4
+                %
+                dXIndexP2 = dXIndexP1+1;
+                dYIndexP2 = dYIndexP1;
+                %
+                dXIndexP4 = dXIndexP1+1;
+                dYIndexP4 = dYIndexP1-1;
+                %
+                dXIndexP3 = dXIndexP1;
+                dYIndexP3 = dYIndexP1-1;
+                %
+            else
+                %Ponto de medição está na borda inferior esquerda do grid 
+                % P4 - P3
+                % |    |
+                % P1 - P2
+                %
+                dXIndexP2 = dXIndexP1+1;
+                dYIndexP2 = dYIndexP1;
+                %
+                dXIndexP4 = dXIndexP1+1;
+                dYIndexP4 = dYIndexP1+1;
+                %
+                dXIndexP3 = dXIndexP1;
+                dYIndexP3 = dYIndexP1+1;
+            end
+            
+            %Distâncias para regressão linear, X e Y são as distâncias horizontal e vertical entre o usuário (ponto de medição)
+            %X e Y são normalizadas pela distância de descorrelação, assumindo valores entre 0 e 1.
+            dDistX = (mod(real(dshadPoint),dShad))/dShad; %dShad = distância de descorrelação = ddec 
+            dDistY = (mod(imag(dshadPoint),dShad))/dShad;
+            
+            %?(1?2Y+2Y2)(1?2X+2X2)
+            dStdNormFactor = sqrt((1 - 2 * dDistY + 2 * (dDistY^2))*(1 - 2 * dDistX + 2 * (dDistX^2)));
+            
+            %Amostra do sombreamento do mapa comum
+            %dSamplexn =  XA , XB, XC e XD as amostras de sombreamento dos quatro pontos mais próximos do usuário (ponto de medição)
+            dSample1 = mtShadowingSamples(dYIndexP1,dXIndexP1,8);
+            dSample2 = mtShadowingSamples(dYIndexP2,dXIndexP2,8);
+            dSample3 = mtShadowingSamples(dYIndexP3,dXIndexP3,8);
+            dSample4 = mtShadowingSamples(dYIndexP4,dXIndexP4,8);
+            %X'u = Xu (ambiente) /dStdNormFactor
+            dShadowingC = ((1-dDistY)*[dSample1*(1-dDistX) + dSample2*(dDistX)] +...
+                (dDistY)*[dSample3*(1-dDistX) + dSample4*(dDistX)])/dStdNormFactor;
+            %Amostra do sombreamento de cada ERB
+            for iMap = 1:7
+                dSample1 = mtShadowingSamples(dYIndexP1,dXIndexP1,iMap);
+                dSample2 = mtShadowingSamples(dYIndexP2,dXIndexP2,iMap);
+                dSample3 = mtShadowingSamples(dYIndexP3,dXIndexP3,iMap);
+                dSample4 = mtShadowingSamples(dYIndexP4,dXIndexP4,iMap);
+                %X'u = Xu (ERB e ponto de medição) /dStdNormFactor
+                %onde Xu=(1?Y)[XA(1?X)+XB(X)]+(Y)[XC(1?X)+XD(X) e 
+                %X = dDistX;   XA = dSample1;
+                dShadowingERB = ((1-dDistY)*[dSample1*(1-dDistX) + dSample2*(dDistX)] +...
+                    (dDistY)*[dSample3*(1-dDistX) + dSample4*(dDistX)])/dStdNormFactor; 
+                %Equação do modelo para o sombreamento correlacionado
+                mtShadowingCorr(il,ic,iMap) = sqrt(dAlphaCorr)*dShadowingC + sqrt(1-dAlphaCorr)*dShadowingERB;
+            end
+        end
+    end
+end
+end
+```
+##### Foi criado o arquivo: ```fCorrShadowing.m```.
 
 
+#### Passo 04
+* O código foi debugado e salvo em ```handson2_p41.m```, a partir deste código foram criados 8 mapas de atenuação de sombreamento (7 para as ERBs e 1 comum).
+* Foi definido o parâmetro dAlphaCorr para controlar a correlação do sombreamento entre ERBs.
+* O REM foi calculado para todo o grid, considerando três casos: 
+    - (i) Somente path loss; 
+    - (ii) Path loss e sombreamento descorrelacionado; 
+    - (iii) Path loss e sombreamento correlacionado.
+* Para que esse código funcione, é necessário que a função ```fCorrShadowing.m``` esteja funcional, já que esse código faz uma chamada nela.
+```
+%Entrada de parâmetros
+dR = 200;  %Raio do Hexágono
+dFc = 800;  %Frequência da portadora
+dShad = 50; %Distância de descorrelação do shadowing
+dSigmaShad = 8; %Desvio padrão do sombreamento lognormal
+
+%p (rho) --> Correlação moderada
+dAlphaCorr = 0.5; %Coeficiente de correlação do sombreamento entre ERBs (sombreamento correlacionado)
+%Quando rho = 1, não existe correlação do sombreamento entre diferentes ERBs (o sombreamento de cada ERB é 
+%independente). 
+%Por outro lado, quando rho = 0, o sombreamento é igual para um ponto do espçao e qualquer ERB do sistema.
 
 
+%Cálculos de outras variáveis que dependem dos parâmetros de entrada
+%dPasso = ceil(dR/10);   %Resolução do grid: distância entre pontos de medição
+dPasso = 10; 
+dRMin = dPasso; %Raio de segurança
+dIntersiteDistance = 2*sqrt(3/4)*dR;  %Distância entre ERBs (somente para informação)
 
+%Cálculos de outras variáveis que dependem dos parâmetros de entrada
+dDimXOri = 5*dR;  %Dimensão X do grid
+dDimYOri = 6*sqrt(3/4)*dR;  %Dimensão Y do grid
+dPtdBm = 57; %EIRP (incluindo ganho e perdas)
+dPtLinear = 10^(dPtdBm/10)*1e-3; %EIRP em escala linear
+dHMob = 5; %Altura do receptor
+dHBs = 30; %Altura do transmissor
+dAhm = 3.2*(log10(11.75*dHMob)).^2 - 4.97; %Modelo Okumura-Hata: Cidade grande e fc  >= 400MHz
 
-_______________________
-![alt text](Prática_02/todas_7_ERB_sem_shadowing.png)   
-##### Foram criados os arquivos: ```handson2_p21.m ```, todas_7_ERB_shadowing.png e todas_7_ERB_sem_shadowing.png.
+%Vetor com posições das BSs (grid Hexagonal com 7 células, uma célula central e uma camada de células ao redor)
+vtBs = [0];
+dOffset = pi/6;
+for iBs = 2 : 7
+    vtBs = [vtBs dR*sqrt(3)*exp(j * ((iBs-2)*pi/3 + dOffset))];
+end
+vtBs = vtBs + (dDimXOri/2 + j*dDimYOri/2);  %Ajuste de posição das bases (posição relativa ao canto inferior esquerdo)
 
-### Sombreamento correlacionado
+%Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo)
+dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid
+dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid
+[mtPosx,mtPosy] = meshgrid(0:dPasso:dDimX, 0:dPasso:dDimY);
+mtPontosMedicao = mtPosx + j*mtPosy;
 
-### Prática 03: Construção dos mapas de sombreamento correlacionado
-Nesta prática foi construído um mapa de sombreamento correlacionado, que inclui a visualização espacial da distribuição dos pontos de medição.
+%Iniciação da Matriz de com a máxima potência recebida  em cada ponto medido. 
+%Essa potência é a maior entre as 7 ERBs.
+%-inf*ones(size(mtPosy)) == matriz 105x101 de valores -inf
+mtPowerFinaldBm = -inf*ones(size(mtPosy));
+mtPowerFinalShaddBm = -inf*ones(size(mtPosy));
+mtPowerFinalShadCorrdBm = -inf*ones(size(mtPosy));
 
-#### Passo 01 
+%Cálculo do sombreamento correlacionado
+mtShadowingCorr = fCorrShadowing(mtPontosMedicao,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri);
 
+%Calcular O REM de cada ERB e acumular a maior potência em cada ponto de medição
+for iBsD = 1 : length(vtBs) %Loop nas 7 ERBs
+    %Matriz 3D com os pontos de medição de cada ERB. Os pontos são
+    % modelados como números complexos X +jY, sendo X a posição na abcissa e Y, a posição no eixo das ordenadas
+    mtPosEachBS = mtPontosMedicao-(vtBs(iBsD));
+    mtDistEachBs = abs(mtPosEachBS);  %Distância entre cada ponto de medição e a sua ERB
+    mtDistEachBs(mtDistEachBs < dRMin) = dRMin; %Implementação do raio de segurança
+    
+    %Okumura-Hata (cidade urbana) - dB
+    mtPldB = 69.55 + 26.16*log10(dFc) + (44.9 - 6.55*log10(dHBs))*log10(mtDistEachBs/1e3) - 13.82*log10(dHBs) - dAhm;
+    
+    %Shadowing independente em cada ponto
+    mtShadowing = dSigmaShad*randn(size(mtPosy));
+    %Potências recebidas em cada ponto de medição sem shadowing
+    mtPowerEachBSdBm = dPtdBm - mtPldB;
+    %Potências recebidas em cada ponto de medição com shadowing
+    mtPowerEachBSShaddBm = dPtdBm - mtPldB + mtShadowing;
+    %Potências recebidas em cada ponto de medição com shadowing correlacionado
+    mtPowerEachBSShadCorrdBm = dPtdBm - mtPldB + mtShadowingCorr(:,:,iBsD);
+    %Cálculo da maior potência em cada ponto de medição sem shadowing
+    mtPowerFinaldBm = max(mtPowerFinaldBm,mtPowerEachBSdBm);
+    %Cálculo da maior potência em cada ponto de medição com shadowing
+    mtPowerFinalShaddBm = max(mtPowerFinalShaddBm,mtPowerEachBSShaddBm);
+    %Cálculo da maior potência em cada ponto de medição com shadowing correlacionado
+    mtPowerFinalShadCorrdBm = max(mtPowerFinalShadCorrdBm,mtPowerEachBSShadCorrdBm);
+end
+%Plot da REM de todo o grid (composição das 7 ERBs) sem shadowing
+figure;
+pcolor(mtPosx,mtPosy,mtPowerFinaldBm);
+colormap(hsv);
+colorbar;
+fDrawDeploy(dR,vtBs);
+axis equal;
+title(['Todas as 7 ERB sem shadowing']);
+
+%Plot da REM de todo o grid (composição das 7 ERBs) sem shadowing
+figure;
+pcolor(mtPosx,mtPosy,mtPowerFinalShaddBm);
+colormap(hsv);
+colorbar;
+fDrawDeploy(dR,vtBs);
+axis equal;
+title(['Todas as 7 ERB com shadowing']);
+
+%Cada execução de codigo, gera um gráfico diferente, isso porque as
+%matrizes de sombreamento tem o shadowing independente em cada ponto e que
+%são gerados pela função radn: mtShadowing = dSigmaShad*randn(size(mtPosy));
+%Plot da REM de todo o grid (composição das 7 ERBs) com shadowing correlacionado
+figure;
+pcolor(mtPosx,mtPosy,mtPowerFinalShadCorrdBm);
+colormap(hsv);
+colorbar;
+fDrawDeploy(dR,vtBs);
+axis equal;
+title(['Todas as 7 ERB com shadowing correlacionado']);
+
+%Entrega 3: Comprovação do fator de ajuste do desvio padrão do sombreamento descorrelacionado
+%Escreva um código para comprovar que o desvio padrão das amostras do sombreamento correlacionado 
+%tem o mesmo desvio padrão de entrada dSigmaShad. Comprovar que isso é verdade independente do valor
+%de dAlphaCorr.
+```
+![alt text](Prática_04/path_loss_somente.png)   
+![alt text](Prática_04/path_loss_sombreamento_descorrelacionado.png)  
+![alt text](Prática_04/path_loss_sombreamento_correlacionado.png)  
+##### Foram criados os arquivos: ```handson2_p41.m ```, path_loss_somente.png, path_loss_sombreamento_descorrelacionado.png e path_loss_sombreamento_correlacionado.png.
+
+No caso do sombreamento correlacionado,a distribuição é mais uniforme dos níveis de potência, quando comparamos com o caso do sombreamento descorrelacionado. 
