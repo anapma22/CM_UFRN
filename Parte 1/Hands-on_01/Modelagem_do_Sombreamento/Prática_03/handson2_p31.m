@@ -1,33 +1,33 @@
 close all;clear all;clc;
 % Entrada de parâmetros
-dR = 200; %Raio do Hexágono.
-dShad = 50; %Distância de descorrelação do shadowing, dist entre os pontos na grade.
-dPasso = 7; %Distância entre pontos de medição. 
+dR = 200; % Raio do Hexágono.
+dShad = 50; % Distância de descorrelação do shadowing, dist entre os pontos na grade.
+dPasso = 7; % Distância entre pontos de medição. 
 % Cálculos de outras variáveis que dependem dos parâmetros de entrada.
-dDimXOri = 5*dR; %Dimensão X do grid.
-dDimYOri = 6*sqrt(3/4)*dR; %Dimensão Y do grid.
+dDimXOri = 5*dR; % Dimensão X do grid.
+dDimYOri = 6*sqrt(3/4)*dR; % Dimensão Y do grid.
 
-%Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo).
-dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid.
-dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid.
+% Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo).
+dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  % Ajuste de dimensão para medir toda a dimensão do grid.
+dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  % Ajuste de dimensão para medir toda a dimensão do grid.
 [mtPosx,mtPosy] = meshgrid(0:dPasso:dDimX, 0:dPasso:dDimY);
 mtPontosMedicao = mtPosx + j*mtPosy;
 
-%definição do ponto de mediçao (quadrado vermelho) nos pontos da grade.
-%Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
+% Definição do ponto de mediçao (quadrado vermelho) nos pontos da grade.
+% Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
 dshadPoint = mtPontosMedicao(12,12);
 
-%Matriz de pontos equidistantes de dShad em dShad.
-dDimYS = ceil(dDimYOri+mod(dDimYOri,dShad));  %Ajuste de dimensão para medir toda a dimensão do grid.
+% Matriz de pontos equidistantes de dShad em dShad = ddec.
+dDimYS = ceil(dDimYOri+mod(dDimYOri,dShad));  % Ajuste de dimensão para medir toda a dimensão do grid.
 dDimXS = ceil(dDimXOri+mod(dDimXOri,dShad)); 
 [mtPosxShad,mtPosyShad] = meshgrid(0:dShad:dDimXS, 0:dShad:dDimYS);
 mtPosShad = mtPosxShad+j*mtPosyShad;
 
-%Achar a posição do ponto de medição na matriz de shadowing correlacionado.
+% Achar a posição do ponto de medição na matriz de shadowing correlacionado.
 dXIndexP1 = real(dshadPoint)/dShad;
 dYIndexP1 = imag(dshadPoint)/dShad;
 
-%Cálculo dos demais pontos depende de:
+% Cálculo dos demais pontos depende de:
 % (i) se o ponto de medição é um ponto de shadowing descorrelacionado;
 % (i) se o ponto está na borda lateral direita do grid e no canto superior do grid;
 % (ii) se o ponto está na borda lateral direita do grid;
@@ -41,11 +41,11 @@ if (mod(dXIndexP1,1) == 0 && mod(dYIndexP1,1) == 0)
     plot(complex(mtPosShad(dYIndexP1,dXIndexP1)),'g*');
     disp('O ponto de medição é um ponto de grade');
 else
-    %Índice na matriz do primeiro ponto próximo.
+    % Índice na matriz do primeiro ponto próximo.
     dXIndexP1 = floor(dXIndexP1)+1;
     dYIndexP1 = floor(dYIndexP1)+1;
     if (dXIndexP1 == size(mtPosyShad,2)  && dYIndexP1 == size(mtPosyShad,1) )
-        %Ponto de medição está na borda da lateral direta do grid e no canto superior.
+        % Ponto de medição está na borda da lateral direta do grid e no canto superior.
         % P2 - P1
         % |    |
         % P4 - P3
@@ -57,7 +57,7 @@ else
         dYIndexP3 = dYIndexP1-1;
         %
     elseif (dXIndexP1 == size(mtPosyShad,2))
-        %Ponto de medição está na borda da lateral direta inferior do grid.
+        % Ponto de medição está na borda da lateral direta inferior do grid.
         % P4 - P3
         % |    |
         % P2 - P1
@@ -69,7 +69,7 @@ else
         dXIndexP3 = dXIndexP1;
         dYIndexP3 = dYIndexP1+1;
     elseif (dYIndexP1 == size(mtPosyShad,1))
-        %Ponto de medição está na borda superior esquerda do grid.
+        % Ponto de medição está na borda superior esquerda do grid.
         % P1 - P2
         % |    |
         % P3 - P4
@@ -83,8 +83,8 @@ else
         dXIndexP3 = dXIndexP1;
         dYIndexP3 = dYIndexP1-1;
         %
-    else %pulou os outros e veio direto pra esse
-        %Ponto de medição está na borda inferior esquerda do grid.
+    else % Pulou os outros e veio direto pra esse
+        % Ponto de medição está na borda inferior esquerda do grid.
         % P4 - P3
         % |    |
         % P1 - P2
@@ -100,8 +100,8 @@ else
         dYIndexP3 = dYIndexP1+1;
     end
     
-    %Plot dos pontos de grade.
-    plot(complex(mtPosShad),'ko') %plota várias bolinhas pretas de 0 a 1000 nos dois eixos.
+    % Plot dos pontos de grade.
+    plot(complex(mtPosShad),'ko') % Plota várias bolinhas pretas de 0 a 1000 nos dois eixos.
     hold on;
     
     %Plot do ponto de medição (quadrado vermelho).

@@ -1,59 +1,59 @@
 close all;clear all;clc;
-%Entrada de parâmetros
-dR = 150;  %Raio do Hexágono
-dShad = 50;  %Distância de descorrelação do shadowing
-dPasso = 7;  %Distância entre pontos de medição
-dSigmaShad = 8; %Desvio padrão do sombreamento lognormal
-%Cálculos de outras variáveis que dependem dos parâmetros de entrada
-dDimXOri = 5*dR; %Dimensão X do grid
-dDimYOri = 6*sqrt(3/4)*dR; %Dimensão Y do grid
+% Entrada de parâmetros
+dR = 150;    % Raio do Hexágono
+dShad = 50;  % Distância de descorrelação do shadowing
+dPasso = 7;  % Distância entre pontos de medição
+dSigmaShad = 8; % Desvio padrão do sombreamento lognormal
+% Cálculos de outras variáveis que dependem dos parâmetros de entrada
+dDimXOri = 5*dR; % Dimensão X do grid
+dDimYOri = 6*sqrt(3/4)*dR; % Dimensão Y do grid
 
-%Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo)
-dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid
-dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid
+% Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo)
+dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  % Ajuste de dimensão para medir toda a dimensão do grid
+dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  % Ajuste de dimensão para medir toda a dimensão do grid
 [mtPosx,mtPosy] = meshgrid(0:dPasso:dDimX, 0:dPasso:dDimY);
-%[mtPosx,mtPosy] = meshgrid(0:7:751, 0:7:782);
+% [mtPosx,mtPosy] = meshgrid(0:7:751, 0:7:782);
 mtPontosMedicao = mtPosx + j*mtPosy;
 
-%Matriz de pontos equidistantes de dShad em dShad
-dDimYS = ceil(dDimYOri+mod(dDimYOri,dShad)); %Ajuste de dimensão para medir toda a dimensão do grid
+% Matriz de pontos equidistantes de dShad em dShad - ddec em ddec
+dDimYS = ceil(dDimYOri+mod(dDimYOri,dShad)); % Ajuste de dimensão para medir toda a dimensão do grid
 dDimXS = ceil(dDimXOri+mod(dDimXOri,dShad));
 [mtPosxShad,mtPosyShad] = meshgrid(0:dShad:dDimXS, 0:dShad:dDimYS);
-%[mtPosxShad,mtPosyShad] = meshgrid(0:50:750, 0:50:809);
+% [mtPosxShad,mtPosyShad] = meshgrid(0:50:750, 0:50:809);
 mtPosShad = mtPosxShad+j*mtPosyShad;
-%Amostras de sombremento para os pontos de grade
+% Amostras aleatórias de sombremento para os pontos de grade
 mtShadowingSamples = dSigmaShad*randn(size(mtPosyShad));
 
 [dSizel, dSizec] = size(mtPontosMedicao);
 
 for il = 1: dSizel
     for ic = 1: dSizec
-        %Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
+        % Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
         dshadPoint = mtPontosMedicao(il,ic);
         
-        %Achar a posição do ponto de medição na matriz de shadowing correlacionado
+        % Achar a posição do ponto de medição na matriz de shadowing correlacionado
         dXIndexP1 = real(dshadPoint)/dShad;
         dYIndexP1 = imag(dshadPoint)/dShad;
         
-        %Cálculo dos demais pontos depende de:
+        % Cálculo dos demais pontos depende de:
         % (i) se o ponto de medição é um ponto de shadowing descorrelacionado
         % (i) se o ponto está na borda lateral direita do grid e no canto superior do grid;
         % (ii) se o ponto está na borda lateral direita do grid;
         % (iii) se o ponto está na borda superior do grid;
         % (iv)  se o ponto está no meio do grid.
         if (mod(dXIndexP1,1) == 0 && mod(dYIndexP1,1) == 0)
-            %O ponto de medição é um ponto de grade
+            % O ponto de medição é um ponto de grade
             dXIndexP1 = floor(dXIndexP1)+1;
             dYIndexP1 = floor(dYIndexP1)+1;
             plot(complex(mtPosShad(dYIndexP1,dXIndexP1)),'g*');
-            %Amostra de sombreamento
+            % Amostra de sombreamento
             mtShadowingCorr(il,ic) = mtShadowingSamples(dYIndexP1,dXIndexP1);
         else
-            %Índice na matriz do primeiro ponto próximo
+            % Índice na matriz do primeiro ponto próximo
             dXIndexP1 = floor(dXIndexP1)+1;
             dYIndexP1 = floor(dYIndexP1)+1;
             if (dXIndexP1 == size(mtPosyShad,2)  && dYIndexP1 == size(mtPosyShad,1) )
-                %Ponto de medição está na borda da lateral direta do grid e no canto superior
+                % Ponto de medição está na borda da lateral direta superior do grid 
                 % P2 - P1
                 % |    |
                 % P4 - P3
@@ -66,7 +66,7 @@ for il = 1: dSizel
                 dYIndexP3 = dYIndexP1-1;
                 %
             elseif (dXIndexP1 == size(mtPosyShad,2))
-                %Ponto de medição está na borda da lateral direta do grid
+                %Ponto de medição está na borda da lateral direta inferior do grid
                 % P4 - P3
                 % |    |
                 % P2 - P1
@@ -78,7 +78,7 @@ for il = 1: dSizel
                 dXIndexP3 = dXIndexP1;
                 dYIndexP3 = dYIndexP1+1;
             elseif (dYIndexP1 == size(mtPosyShad,1))
-                %Ponto de medição está na borda superior do grid
+                % Ponto de medição está na borda esquerda superior do grid
                 % P1 - P2
                 % |    |
                 % P3 - P4
@@ -93,6 +93,7 @@ for il = 1: dSizel
                 dYIndexP3 = dYIndexP1-1;
                 %
             else
+                % Ponto de medição está na borda esquerda inferior do grid
                 % P4 - P3
                 % |    |
                 % P1 - P2
@@ -108,16 +109,15 @@ for il = 1: dSizel
                 dYIndexP3 = dYIndexP1+1;
             end
             %
-            %Distâncias para regressão linear
+            % Distâncias para regressão linear
             dDistX = (mod(real(dshadPoint),dShad))/dShad;
             dDistY = (mod(imag(dshadPoint),dShad))/dShad;
             
-            %Desvio padrão da amostra Xu.
-            %Ajuste do desvio padrão devido a regressão linear
+            % Ajuste do desvio padrão devido a regressão linear
             dStdNormFactor = sqrt( (1 - 2 * dDistY + 2 * (dDistY^2) )*(1 - 2 * dDistX + 2 * (dDistX^2) ) );
             
-            %Calculo do sombreamento via regressão linear. ISSO É AQUI MESMO? SIM
-            %Amostras do sombreamento para os quatro pontos de grade
+            % Cálculo do sombreamento via regressão linear. 
+            % Amostras do sombreamento para os quatro pontos de grade
             dSample1 = mtShadowingSamples(dYIndexP1,dXIndexP1);
             dSample2 = mtShadowingSamples(dYIndexP2,dXIndexP2);
             dSample3 = mtShadowingSamples(dYIndexP3,dXIndexP3);
@@ -127,6 +127,6 @@ for il = 1: dSizel
         end
     end
 end
-%Plot da superfície de atenuação devido ao sombreamento
-%surf( X , Y , Z ) creates a three-dimensional surface plot, which is a three-dimensional surface that has solid edge colors and solid face colors.
+% Plot da superfície de atenuação devido ao sombreamento
+% surf( X , Y , Z ) creates a three-dimensional surface plot, which is a three-dimensional surface that has solid edge colors and solid face colors.
 surf(mtPosx,mtPosy,mtShadowingCorr)
