@@ -699,11 +699,7 @@ end
 #### Passo 03
 * Foi criado uma chamada para a função ```fCorrShadowing```, a partir de uma mudança no código que estava sendo trabalhado. A partir desta função, foram criados oito mapas de atenuação de sombreamento (sete para as ERBs e um comum).
 * O valor da variável ```dAlphaCorr``` foi usada para controlar a correlação do sombreamento entre ERBs.
-* É importante fazer algumas observações que foram feitas:
-    - (i) Não tem a definição do dAlphaCorr anteriormente, portante é necessário definir aqui.
-    - (ii) ```mtPoint```s também não existe, mas ela é a matriz de números complexos com os pontos de medição, anteriormente, essa matriz era representada pela variável```mtPontosMedicao```. 
-    - (iii) Essa função precisa ficar na pasta de trabalho do Matlab, e.g. ```C:\Program Files\MATLAB\MATLAB Production Server\R2015a\bin```.
-    Com essas alterações, é possível fazer a chamada da função na Command Window: ```fCorrShadowing(mtPontosMedicao, dShad, dAlphaCorr, dSigmaShad, dDimXOri, dDimYOri)```.
+* Essa função precisa ficar na pasta de trabalho do Matlab, e.g. ```C:\Program Files\MATLAB\MATLAB Production Server\R2015a\bin```.
 ```
 % file fCorrShadowing.m
 
