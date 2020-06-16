@@ -177,7 +177,7 @@ Taxa de outage = 9.9615 %
 Caso o usuário digite outro valor que não seja o 1 ou 2, será mostrado a mensagem: ```Você não digitou uma opção válida, reinicie o programa.``` e o programa é encerrado.
 
 Para melhor visualização ente os resultados dos dois modelos, a tabela abaixo foi criada. 
-|  Frequência (MHz) | Modelo de Propagação  | Raio obtido  | Taxa de outgate (%)  |
+|  Frequência (MHz) | Modelo de Propagação  | Raio obtido  | Taxa de outage (%)  |
 |:-:|:-:|:-:|:-:|
 |  800  | Okumura-Hata |  8040 |  9.9709 |
 |  800  |    COST 231  |  6940 |  9.9219 |
@@ -185,7 +185,7 @@ Para melhor visualização ente os resultados dos dois modelos, a tabela abaixo 
 |  900  |     COST 231 |  6210 |  9.9983 |
 | 1800  | Okumura-Hata |  4390 |  9.9308 |
 | 1800  |    COST 231  |  3180 |  9.9006 |
-| 1900  | Okumura-Hata |  5630 |  10     |
+| 1900  | Okumura-Hata |  4220 |  9.9409 |
 | 1900  |     COST 231 |  3020 |  9.9826 |
 | 2100  | Okumura-Hata |  3910 |  9.8243 |
 | 2100  |    COST 231  |  2740 |  9.9615 |
