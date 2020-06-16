@@ -97,7 +97,7 @@ dDimX = 5*dR; %Dimensão X do grid.
 dDimY = 6*sqrt(3/4)*dR; %Dimensão Y do grid.
 dPtdBm = 57; %EIRP (incluindo ganho e perdas).
 dPtLinear = 10^(dPtdBm/10)*1e-3; %EIRP em escala linear.
-dHMob = 5; %Altura do receptor.
+dHMob = 1.8; %Altura do receptor.
 dHBs = 30; %Altura do transmissor.
 dAhm = 3.2*(log10(11.75*dHMob)).^2 - 4.97; % Modelo Okumura-Hata: Cidade grande e fc >= 400MHz.
 
@@ -908,7 +908,7 @@ dDimXOri = 5*dR;  % Dimensão X do grid
 dDimYOri = 6*sqrt(3/4)*dR;  % Dimensão Y do grid
 dPtdBm = 57; % EIRP (incluindo ganho e perdas)
 dPtLinear = 10^(dPtdBm/10)*1e-3; % EIRP em escala linear
-dHMob = 5; % Altura do receptor
+dHMob = 1.8; % Altura do receptor
 dHBs = 30; % Altura do transmissor
 dAhm = 3.2*(log10(11.75*dHMob)).^2 - 4.97; % Modelo Okumura-Hata: Cidade grande e fc >= 400MHz
 
