@@ -130,48 +130,48 @@ Caso ele digite 1, as frequências serão trabalhadas no modelo Okumura Hata, re
 ```
 **********************************
 Frequência da portadora = 800
-Raio = 10680
-Taxa de outage = 9.9019 %
+Raio = 8040
+Taxa de outage = 9.9709 %
 **********************************
 Frequência da portadora = 900
-Raio = 9830
-Taxa de outage = 9.9983 %
+Raio = 7360
+Taxa de outage = 9.9922 %
 **********************************
 Frequência da portadora = 1800
-Raio = 5870
-Taxa de outage = 10 %
+Raio = 4390
+Taxa de outage = 9.9308 %
 **********************************
 Frequência da portadora = 1900
-Raio = 5630
-Taxa de outage = 10 %
+Raio = 4220
+Taxa de outage = 9.9409 %
 **********************************
 Frequência da portadora = 2100
-Raio = 5220
-Taxa de outage = 9.9413 %
+Raio = 3910
+Taxa de outage = 9.8243 %
 ```
 
 Caso o usuário digite 2, o modelo será o COST 231, que trará os seguintes resultados:
 ```
 **********************************
 Frequência da portadora = 800
-Raio = 9280
-Taxa de outage = 9.9985 %
+Raio = 6940
+Taxa de outage = 9.9219 %
 **********************************
 Frequência da portadora = 900
-Raio = 8280
-Taxa de outage = 9.9969 %
+Raio = 6210
+Taxa de outage = 9.9983 %
 **********************************
 Frequência da portadora = 1800
-Raio = 4240
-Taxa de outage = 9.9831 %
+Raio = 3180
+Taxa de outage = 9.9006 %
 **********************************
 Frequência da portadora = 1900
-Raio = 4020
-Taxa de outage = 9.9487 %
+Raio = 3020
+Taxa de outage = 9.9826 %
 **********************************
 Frequência da portadora = 2100
-Raio = 3650
-Taxa de outage = 9.9556 %
+Raio = 2740
+Taxa de outage = 9.9615 %
 ```
 
 Caso o usuário digite outro valor que não seja o 1 ou 2, será mostrado a mensagem: ```Você não digitou uma opção válida, reinicie o programa.``` e o programa é encerrado.
@@ -179,13 +179,13 @@ Caso o usuário digite outro valor que não seja o 1 ou 2, será mostrado a mens
 Para melhor visualização ente os resultados dos dois modelos, a tabela abaixo foi criada. 
 |  Frequência (MHz) | Modelo de Propagação  | Raio obtido  | Taxa de outgate (%)  |
 |:-:|:-:|:-:|:-:|
-|  800  | Okumura-Hata | 10680 |  9.9019 |
-|  800  |    COST 231  |  9280 |  9.9985 |
-|  900  | Okumura-Hata |  9830 |  9.9983 |
-|  900  |     COST 231 |  8280 |  9.9969 |
-| 1800  | Okumura-Hata |  5870 |  10     |
-| 1800  |    COST 231  |  4240 |  9.9831 |
+|  800  | Okumura-Hata |  8040 |  9.9709 |
+|  800  |    COST 231  |  6940 |  9.9219 |
+|  900  | Okumura-Hata |  7360 |  9.9922 |
+|  900  |     COST 231 |  6210 |  9.9983 |
+| 1800  | Okumura-Hata |  4390 |  9.9308 |
+| 1800  |    COST 231  |  3180 |  9.9006 |
 | 1900  | Okumura-Hata |  5630 |  10     |
-| 1900  |     COST 231 |  4020 |  9.9487 |
-| 2100  | Okumura-Hata |  5220 |  9.9413 |
-| 2100  |    COST 231  |  3650 |  9.9556 |
+| 1900  |     COST 231 |  3020 |  9.9826 |
+| 2100  | Okumura-Hata |  3910 |  9.8243 |
+| 2100  |    COST 231  |  2740 |  9.9615 |
