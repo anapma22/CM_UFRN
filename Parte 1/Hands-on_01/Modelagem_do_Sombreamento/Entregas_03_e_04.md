@@ -74,9 +74,6 @@ O primeiro termo representa a atenuação de espaço livre, o segundo termo a at
 
 O método semi-empírico de Walfisch-Ikegami, é para os casos com visibilidade (LOS) e sem
 visibilidade. O segundo é o que foi trabalhado no projeto, o Non Line of Sigh (NLOS) between base and mobile. 
-http://kilyos.ee.bilkent.edu.tr/~microwave/programs/wireless/prop/costWI.htm
-
-
 
 https://repositorio.ufrn.br/jspui/bitstream/123456789/15379/1/CarlosGM_DISSERT.pdf#page=62&zoom=100,109,652
 
@@ -95,8 +92,18 @@ Parâmetros usados neste modelo de propagação:
 
 
 # Dúvida
-Na Parte 1, tem a seguite especificação:
-" Estações móveis com altura média de 1,8 m;" 
-Nos códigos da parte 1, tem isso:
-"dHMob = 5;                                                 % Altura do receptor"
-Havia entendido que dHMob seria o parâmetro para a altura das estações móveis, isso é correto? Se sim, qual dos valores deve ser adotado no projeto para essa variável?
+
+
+Na entrega 03, é para fazer uma verificação, sem implementar nada novo no código?
+3. A fCorrShadowing.m cria 8 gráficos?
+
+Criar 8 mapas de atenuação de sombreamento (7 para as ERBs e 1 comum) e devolver um mapa do sombreameto de cada ponto de medição, considerando o valor do dAlphaCorr para controlar a correlação do sombreamento entre ERBs;
+
+Na entrega 04, deve ter um REM que identifique a área de Outage e a área com potência maior que a mínima.
+ - A potência mínima é a sensibilidade de -104 dBm?
+ - A área de Outgate é com p
+
+
+Mapa gera um gráfico? Na fCorrShadowing.m diz que vai gerar 8 mapas, mas são 8 matrizes.
+QUEM É ESSE IMAP??????
+Já na entrega 3 também se refere a um mapa, mas fala que é um gráfico.
