@@ -707,8 +707,7 @@ end
 ```
 % file fCorrShadowing.m
 
-% function mtShadowingCorr = fCorrShadowing(mtPoints,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri)
-function mtShadowingCorr = fCorrShadowing(mtPontosMedicao,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri)
+function mtShadowingCorr = fCorrShadowing(mtPoints,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri)
 % X?i,j = mtShadowingCorr --> modelo para o sombreamento correlacionado. 
 
 % INPUTS:
@@ -740,14 +739,12 @@ for iMap = 1:8 %samples - amostras
     mtShadowingSamples(:,:,iMap) = dSigmaShad*randn(size(mtPosyShad));
 end
 
-%[dSizel, dSizec] = size(mtPoints);
-[dSizel, dSizec] = size(mtPontosMedicao);
+[dSizel, dSizec] = size(mtPoints);
 for il = 1: dSizel
     for ic = 1: dSizec
         %Ponto de medição alvo (vamos localiza-lo no novo grid e plotar os quatro pontos que o circundam) - escolhido ao acaso
-        %dshadPoint = mtPoints(il,ic);
-        dshadPoint = mtPontosMedicao(il,ic);
-        
+        dshadPoint = mtPoints(il,ic);
+            
         %Achar a posição do ponto de medição na matriz de shadowing correlacionado
         dXIndexP1 = real(dshadPoint)/dShad;
         dYIndexP1 = imag(dshadPoint)/dShad;
