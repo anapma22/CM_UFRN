@@ -5,47 +5,29 @@
 
 #### Atenção: Caso o valor não bate, tente modificar o código para corrigir o problema (a priori, ele não existe).
 
-Foi verificado que ```dSigmaShad``` tem o valor 8, logo, o desvio padrão de ```mtShadowingCorr``` também deve ser 8 para atender a entrega.   
-Não foi necessário fazer alterações no código para tal, isso pode ser verificado abaixo:
-* Para dAlphaCorr = 0:
-```
->> std(mtShadowingCorr(:))
-ans = 8.0014 
-```
 
-* Para dAlphaCorr = 0.5:
-```
->> std(mtShadowingCorr(:))
-ans = 8.3031  
-```
+std(mtShadowingCorr(:))
 
-* Para dAlphaCorr = 1:
-```
->> std(mtShadowingCorr(:))
-ans = 8.0014
-```
-A diferença entre os valores é no máximo de 3 cadas decimais.
-
-Outro ponto nesta entrega foi verificar se as amostras da matriz ```mtPowerFinalShadCorrdBm``` tem sombreamento com desvio padrão ```dSigmaShad``` para alguns valores de ```dAlphaCorr```. A verificação está abaixo:
+Foi verificado que ```dSigmaShad``` tem o valor 8, logo, o desvio padrão de ```mtPowerFinalShadCorrdBm``` também deve ser 8 para atender a entrega.
+A verificação está abaixo:
 * Para dAlphaCorr = 0:
 ```
 >> std(mtPowerFinalShadCorrdBm(:))
-ans = 10.2670
+ans = 9.2983
 ```
 
 * Para dAlphaCorr = 0.5:
 ```
 >> std(mtPowerFinalShadCorrdBm(:))
-ans = 10.8823  
+ans = 10.8725  
 ```
 
 * Para dAlphaCorr = 1:
 ```
 >> std(mtPowerFinalShadCorrdBm(:))
-ans = 10.2670  
+ans = 12.0885  
 ```
 Como é sugerido na prórpia entrega, não foi necessário fazer alterações no código, apenas a variação do ```dAlphaCorr```.  
-Lembrando que, não foi feito nenhuma alteração para esta entrega, porém foram feitas alterações na função ```fCorrShadowing.m```, para que a mesma pudesse ser executada.
 
 
 # Entrega 04: Modelagem e avaliação da inclusão de microcélulas
@@ -58,6 +40,7 @@ Lembrando que, não foi feito nenhuma alteração para esta entrega, porém fora
 #### Posicione seis (somente seis) microcélulas em pontos estratégicos escolhidos por você. Deve ficar claro no seu relatório a razão do posicionamento escolhido por você.    
 #### Para isso, ainda sem as microcélulas, monte um REM somente de duas cores, identificando:  
 #### (i) a área de Outage do mapa (cor 1); 
+Como que vou imprimir essa área se mtPowerFinaldBm, mtPowerFinalShaddBm e mtPowerFinalShadCorrdBm tem todos os valores maiores que dSensitivity = -104?
 #### (ii) área com potência maior que a mínima (cor 2). 
 #### Analise esse gráfico e decida qual o melhor posicionamento da suas seis microcélulas. Inclua esse REM no seu relatório. Faça o mesmo REM com a inclusão das microcélulas. Inclua também esse REM no seu relatório.
 
@@ -73,7 +56,7 @@ iluminação), cada vez mais utilizados.
 O primeiro termo representa a atenuação de espaço livre, o segundo termo a atenuação por difração e dispersão no topo dos edifícios (rooftop to street diffraction and scatter loss) e o terceiro a atenuação já ao nível das ruas devido às múltiplas difrações e reflexões que ocorrem (multi-screen diffraction loss).
 
 O método semi-empírico de Walfisch-Ikegami, é para os casos com visibilidade (LOS) e sem
-visibilidade. O segundo é o que foi trabalhado no projeto, o Non Line of Sigh (NLOS) between base and mobile. 
+visibilidade. O segundo caso, é o trabalhado no projeto, o Non Line of Sigh (NLOS) between base and mobile. 
 
 https://repositorio.ufrn.br/jspui/bitstream/123456789/15379/1/CarlosGM_DISSERT.pdf#page=62&zoom=100,109,652
 
@@ -90,20 +73,8 @@ Parâmetros usados neste modelo de propagação:
 * w = Largura da rua (Utiliza-se d/2, não havendo informações = (mtDistEachBs/1e3)/2);
 * Φ = Ângulo de incidência da onda em direção ao nível da rua.
 
+* Quem é ht = 32m? é o dHBs
 
-# Dúvida
-
-
-Na entrega 03, é para fazer uma verificação, sem implementar nada novo no código?
-3. A fCorrShadowing.m cria 8 gráficos?
-
-Criar 8 mapas de atenuação de sombreamento (7 para as ERBs e 1 comum) e devolver um mapa do sombreameto de cada ponto de medição, considerando o valor do dAlphaCorr para controlar a correlação do sombreamento entre ERBs;
-
-Na entrega 04, deve ter um REM que identifique a área de Outage e a área com potência maior que a mínima.
- - A potência mínima é a sensibilidade de -104 dBm?
- - A área de Outgate é com p
-
-
-Mapa gera um gráfico? Na fCorrShadowing.m diz que vai gerar 8 mapas, mas são 8 matrizes.
-QUEM É ESSE IMAP??????
-Já na entrega 3 também se refere a um mapa, mas fala que é um gráfico.
+Dúvidas da entrega 04:
+* Aplica o COST 231 Walfish-Ikegami NLOS em toda a entrega 04, ou só para as microcélulas?
+* "Faça os mapas com resolução espacial de 50 m", w = 50m?
