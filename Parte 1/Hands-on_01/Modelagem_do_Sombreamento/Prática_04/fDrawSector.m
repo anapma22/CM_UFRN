@@ -9,4 +9,4 @@ vtHex=vtHex+dCenter;
 vtHexp=[vtHex vtHex(1)];
 plot(vtHexp,'k');
 
-fDrawSector(100,100+50*i)
+%fDrawSector(100,100+50*i)

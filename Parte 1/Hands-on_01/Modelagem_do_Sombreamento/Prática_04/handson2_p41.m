@@ -5,12 +5,7 @@ dShad = 50; %Distância de descorrelação do shadowing
 dSigmaShad = 8; %Desvio padrão do sombreamento lognormal
 
 %p (rho) --> Correlação moderada
-dAlphaCorr = 0.5; %Coeficiente de correlação do sombreamento entre ERBs (sombreamento correlacionado)
-%Quando rho = 1, não existe correlação do sombreamento entre diferentes ERBs (o sombreamento de cada ERB é 
-%independente). 
-%Por outro lado, quando rho = 0, o sombreamento é igual para um ponto do espçao e qualquer ERB do sistema.
-
-
+dAlphaCorr = 0; %Coeficiente de correlação do sombreamento entre ERBs (sombreamento correlacionado)
 %Cálculos de outras variáveis que dependem dos parâmetros de entrada
 %dPasso = ceil(dR/10);   %Resolução do grid: distância entre pontos de medição
 dPasso = 10; 
@@ -47,7 +42,7 @@ mtPowerFinaldBm = -inf*ones(size(mtPosy));
 mtPowerFinalShaddBm = -inf*ones(size(mtPosy));
 mtPowerFinalShadCorrdBm = -inf*ones(size(mtPosy));
 
-%Cálculo do sombreamento correlacionado
+% Cálculo do sombreamento correlacionado, aqui tem o desvio padrão igual ao 8
 mtShadowingCorr = fCorrShadowing(mtPontosMedicao,dShad,dAlphaCorr,dSigmaShad,dDimXOri,dDimYOri);
 
 %Calcular O REM de cada ERB e acumular a maior potência em cada ponto de medição
@@ -105,8 +100,3 @@ colorbar;
 fDrawDeploy(dR,vtBs);
 axis equal;
 title(['Todas as 7 ERB com shadowing correlacionado']);
-
-%Entrega 3: Comprovação do fator de ajuste do desvio padrão do sombreamento descorrelacionado
-%Escreva um código para comprovar que o desvio padrão das amostras do sombreamento correlacionado 
-%tem o mesmo desvio padrão de entrada dSigmaShad. Comprovar que isso é verdade independente do valor
-%de dAlphaCorr.
