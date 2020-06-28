@@ -1,6 +1,8 @@
-% Entrega 04 - Gráficos de microcélulas e Outage final
+%Entrega 04 - Gráficos de microcélulas e Outage final
 clear; close all;
 dR = 500;  % Raio do Hexágono
+% dRMicro altera a função fDrawDeploy, mas não altera a área de outage da microcélula (nosso principal objetivo aqui)
+dRMicro = 150; % Ele foi alterado para 150, pra ficar mais agravel visualmente a posição das microcéluas
 dFc = [800 1800 2100];  % Frequências da portadora
 dSensitivity = -90; % Sensibilidade
 dPasso = 50; % Resolução do grid: distância entre pontos de medição
@@ -24,16 +26,13 @@ for iBs = 2 : 7
 end
 vtBs = vtBs + (dDimXOri/2 + j*dDimYOri/2);  %Ajuste de posição das bases (posição relativa ao canto inferior esquerdo)
 
-
-dRMicro = 100;
-% Vetor com posições das BSs (grid Hexagonal com 6 células, SEM uma célula central e uma camada de células ao redor)
+% Vetor com posições das microcélulas
 vtBsMicro = [0];
+dOffsetMicro = pi;
 for iBs = 7 :-1:2 % for j=180:-1:1
-    % vtBs = [vtBs dR*sqrt(3)*exp(j * ((iBs-2)*pi/3 + dOffset))];
-    vtBsMicro = [vtBsMicro dR*exp(j * ((iBs-2)*pi/3+ dOffset))];
+    vtBsMicro = [vtBsMicro dR*exp(j * ((iBs-2)*pi/3+ dOffsetMicro))];
 end
 vtBsMicro = vtBsMicro + (dDimXOri/2 + j*dDimYOri/2);  %Ajuste de posição das bases (posição relativa ao canto inferior esquerdo)
-
 
 % Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo)
 dDimY = ceil(dDimYOri+mod(dDimYOri,dPasso));  %Ajuste de dimensão para medir toda a dimensão do grid
@@ -41,35 +40,26 @@ dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  %Ajuste de dimensão para medir tod
 [mtPosx,mtPosy] = meshgrid(0:dPasso:dDimX, 0:dPasso:dDimY);
 mtPontosMedicao = mtPosx + j*mtPosy;
 
-
 for idFc = 1: length(dFc)
     % Zerando os valores de outage 
     vtdOutRate = [0]; 
     % Iniciação da Matriz de com a máxima potência recebida  em cada ponto medido. 
     mtPowerFinaldBm = -inf*ones(size(mtPosy));
     
-    %Calcular O REM de cada ERB e acumular a maior potência em cada ponto de medição
-    % Okumura-Hata
-      for iBsD = 1 : length(vtBs) % Teve adição de 6 microcélulas, 6+7 = 13 células no total    
-          %if iBsD <= 7 % Cálculo de macrocélulas
-              mtPosEachBS = mtPontosMedicao -(vtBs(iBsD));
-              mtDistEachBs = abs(mtPosEachBS);  % Distância entre cada ponto de medição e a sua ERB
-              mtDistEachBs(mtDistEachBs < dRMin) = dRMin; % Implementação do raio de segurança 
-              % Okumura-Hata (cidade urbana) - dB
-              mtPldB = 69.55 + 26.16*log10(dFc(idFc)) + (44.9 - 6.55*log10(dHBs))*log10(mtDistEachBs/1e3) - 13.82*log10(dHBs) - dAhm;
-              % Potências recebidas em cada ponto de medição
-              mtPowerEachBSdBm = dPtdBm - mtPldB;
-              % Cálculo da maior potência em cada ponto para macrocélulas
-              mtPowerFinaldBm = max(mtPowerFinaldBm,mtPowerEachBSdBm);          
-%         else % Cálculo de microcélulas 
-%             % Modelo COST 231 Walfisch-Ikegami NLOS 
-%             mtPldBMicro = - 65.5 + 38*log10(mtDistEachBs/1e3) + (24.5 + (1.5 * dFc(idFc)/925))*log10(dFc(idFc));
-%             % Potências recebidas em cada ponto de medição para microcélulas
-%             mtPowerEachBSdBmMicro = dPtdBmMicro - mtPldBMicro;
-%             % Cálculo da maior potência em cada ponto para microcélulas
-%             mtPowerFinaldBm = max(mtPowerFinaldBm,mtPowerEachBSdBmMicro);
-%         end
-     end
+    % Macrocélulas
+    for iBsD = 1 : length(vtBs) % Teve adição de 6 microcélulas, 6+7 = 13 células no total   
+        %if iBsD <= 7 % Cálculo de macrocélulas
+        mtPosEachBS = mtPontosMedicao -(vtBs(iBsD));
+        mtDistEachBs = abs(mtPosEachBS);  % Distância entre cada ponto de medição e a sua ERB
+        mtDistEachBs(mtDistEachBs < dRMin) = dRMin; % Implementação do raio de segurança 
+        % Okumura-Hata (cidade urbana) - dB
+        mtPldB = 69.55 + 26.16*log10(dFc(idFc)) + (44.9 - 6.55*log10(dHBs))*log10(mtDistEachBs/1e3) - 13.82*log10(dHBs) - dAhm;
+        % Potências recebidas em cada ponto de medição
+        mtPowerEachBSdBm = dPtdBm - mtPldB;
+        % Cálculo da maior potência em cada ponto para macrocélulas
+        mtPowerFinaldBm = max(mtPowerFinaldBm,mtPowerEachBSdBm);          
+    end
+     
     % Microcélulas
     for iBsD = 2 : length(vtBsMicro)
         if iBsD == 1
@@ -88,11 +78,11 @@ for idFc = 1: length(dFc)
     end
        
     % Cálculo de porcentagem de Outage
-     vtdOutRate(idFc) = 100*length(find(mtPowerFinaldBm < dSensitivity))/numel(mtPowerFinaldBm);
-     disp(['Frequência da portadora = ' num2str(dFc(idFc))]);
-     disp(['Taxa de outage = ' num2str(vtdOutRate(idFc)) ' %']);
+    vtdOutRate(idFc) = 100*length(find(mtPowerFinaldBm < dSensitivity))/numel(mtPowerFinaldBm);
+    disp(['Frequência da portadora = ' num2str(dFc(idFc))]);
+    disp(['Taxa de outage = ' num2str(vtdOutRate(idFc)) ' %']);
          
-    % Cálculo da matriz de Outage para o plot do Okumura Hata
+    % Cálculo da matriz de Outage
     [dSizel, dSizec] = size(mtPowerFinaldBm);
     linha = 1;
     for il=1: dSizel 
@@ -107,12 +97,12 @@ for idFc = 1: length(dFc)
         end
         linha = linha + 1;
     end
-    %%%%%%%%%%%%%
-    % Plot da área de outage para macrocélulas
+ 
+    % Plot da área de outage para macrocélulas e microcélulas com outage
     figure;
     pcolor(mtPosx,mtPosy,mtOutRate);
-         if mtOutRate == 0
-         colormap gray(2);
+        if mtOutRate == 0
+        colormap gray(2);
     else
         c = gray; % Como inverter as cores do colormap: https://www.mathworks.com/help/matlab/ref/gray.html
         c = flipud(c);    
@@ -121,21 +111,15 @@ for idFc = 1: length(dFc)
     end
     fDrawDeploy(dR,vtBs);
     axis equal;
-    title(['Macrocélulas com outage - Frequência  = ' num2str(dFc(idFc)) ' MHz com Outage']);
-    %%%%%%%%%%%%%
+    title(['Macrocélulas + Microcélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
     
+    % Plot da mtPowerFinaldBm com a inserção de microcélulas
     figure;
-    %pcolor(mtPosx,mtPosy,mtOutRate);
     pcolor(mtPosx,mtPosy,mtPowerFinaldBm);
-    axis equal;
+    colormap gray(2);
     fDrawDeploy(dR,vtBs);
-    title(['Microcélulas com outage - Frequência  = ' num2str(dFc(idFc)) ' MHz com Outage']);
-    if mtOutRate == 0
-          colormap gray(2);
-     else
-         c = gray; % Como inverter as cores do colormap: https://www.mathworks.com/help/matlab/ref/gray.html
-         c = flipud(c);    
-         colorbar;
-         fDrawDeploy(dRMicro,vtBsMicro);
-    end
+    fDrawDeploy(dRMicro,vtBsMicro);
+    axis equal;
+    title(['Microcélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
+
 end

@@ -77,7 +77,7 @@ for idFc = 1: length(dFc)
     colorbar;
     fDrawDeploy(dR,vtBs);
     axis equal;
-    title(['Macrocélulas - Frequência  = ' num2str(dFc(idFc)) ' MHz com Outage']);
+    title(['Macrocélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
 end
 
 
