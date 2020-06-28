@@ -12,4 +12,5 @@ Taxa de outage = 87.6804 %
 
 
 
-
+salvar as outras imagens
+justificar posição de microcélulas
