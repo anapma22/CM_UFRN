@@ -1,10 +1,6 @@
 # Entrega 03: Comprovação do fator de ajuste do desvio padrão do sombreamento correlacionado
-#### Escreva um código para comprovar que o desvio padrão das amostras do sombreamento correlacionado tem o mesmo desvio padrão de entrada dSigmaShad. Comprovar que isso é verdade independente do valor de dAlphaCorr.
 
-#### Verificar se as amostras mtPowerFinalShadCorrdBm tem sombreamento com desvio padrão dSigmaShad para alguns valores de dAlphaCorr.
-
-#### Atenção: Caso o valor não bate, tente modificar o código para corrigir o problema (a priori, ele não existe).
-
+As amostras mtPowerFinalShadCorrdBm tem sombreamento com desvio padrão dSigmaShad para diferentes valores de dAlphaCorr.
 >> entrega3
 O valor de dSgmaShad é: 8
 ******************************************
