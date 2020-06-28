@@ -29,7 +29,7 @@ vtBs = vtBs + (dDimXOri/2 + j*dDimYOri/2);  %Ajuste de posição das bases (posiçã
 % Vetor com posições das microcélulas
 vtBsMicro = [0];
 dOffsetMicro = pi;
-for iBs = 7 :-1:2 % for j=180:-1:1
+for iBs = 2 : 7 
     vtBsMicro = [vtBsMicro dR*exp(j * ((iBs-2)*pi/3+ dOffsetMicro))];
 end
 vtBsMicro = vtBsMicro + (dDimXOri/2 + j*dDimYOri/2);  %Ajuste de posição das bases (posição relativa ao canto inferior esquerdo)
