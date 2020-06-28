@@ -101,7 +101,6 @@ for idFc = 1: length(dFc)
     pcolor(mtPosx,mtPosy,mtOutRate);
         if mtOutRate == 0
         colormap gray(2);
-        colorbar;
     else
         c = gray; % Como inverter as cores do colormap: https://www.mathworks.com/help/matlab/ref/gray.html
         c = flipud(c);    
