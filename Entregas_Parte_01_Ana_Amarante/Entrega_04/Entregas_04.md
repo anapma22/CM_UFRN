@@ -1,14 +1,27 @@
 # Entrega 04: Modelagem e avaliação da inclusão de microcélulas
 Resultados de outages obtidos nas macrocélulas:
 ```
->> entrega_4  
+>> REM_InicialMacrocelulas
 Frequência da portadora = 800
-Taxa de outage = 45.9489 %
+Taxa de outage = 44.4948 %
 Frequência da portadora = 1800
-Taxa de outage = 83.9808 %
+Taxa de outage = 83.4516 %
 Frequência da portadora = 2100
-Taxa de outage = 87.6804 %
+Taxa de outage = 86.8709 %
 ```
+```
+Macrocélulas + Microcélulas
+>> REM_MicroceluasMaisREM_Final
+Frequência da portadora = 800
+Taxa de outage = 38.3386 %
+Frequência da portadora = 1800
+Taxa de outage = 79.1684 %
+Frequência da portadora = 2100
+Taxa de outage = 84.0897 %
+```
+
+o dPasso ficava muito quadrado com 50, foi baixado para 10.
+
 
 
 
