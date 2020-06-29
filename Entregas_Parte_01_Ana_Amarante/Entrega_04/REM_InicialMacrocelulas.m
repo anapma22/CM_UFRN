@@ -5,7 +5,7 @@ clear; close all;
 dR = 500;  % Raio do Hexágono
 dFc = [800 1800 2100];  % Frequência da portadora
 dSensitivity = -90; % Sensibilidade
-dPasso = 50; % Resolução do grid: distância entre pontos de medição
+dPasso = 10; % Resolução do grid: distância entre pontos de medição
 dRMin = dPasso; % Raio de segurança
 dIntersiteDistance = 2*sqrt(3/4)*dR;  % Distância entre ERBs (somente para informação)
 dDimXOri = 5*dR;  % Dimensão X do grid
@@ -71,13 +71,20 @@ for idFc = 1: length(dFc)
     % Plot da área de outage para macrocélulas
     figure;
     pcolor(mtPosx,mtPosy,mtOutRate);
-    c = gray; % Como inverter as cores do colormap: https://www.mathworks.com/help/matlab/ref/gray.html
-    c = flipud(c);    
-    colormap (c); % Caso nenhum dos casos acima, a maior área será de potência maior que a mínima
+    colormap (gray); % Caso nenhum dos casos acima, a maior área será de potência maior que a mínima
     colorbar;
     fDrawDeploy(dR,vtBs);
     axis equal;
     title(['Macrocélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
+    
+    % Plot da mtPowerFinaldBm final
+    figure;
+    pcolor(mtPosx,mtPosy,mtPowerFinaldBm);
+    colormap(hsv);
+    colorbar;
+    fDrawDeploy(dR,vtBs);
+    axis equal;
+    title(['Potência inicial em dBm - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
 end
 
 
