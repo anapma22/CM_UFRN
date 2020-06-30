@@ -1,5 +1,5 @@
 close all;clear all;clc;
-addpath('.D:\Git\ComunicacoesMoveis\Entregas_Parte_01_Ana_Amarante\Entrega_05\fitmethis')
+addpath('.\fitmethis')
 
 % Estimação com o conhecimento do sombreamento e do fading
 % Parâmetros para geração do canal real
@@ -77,30 +77,30 @@ end
 
 
 % Teste KS
-sDistNames = [{'Weibull'};{'Rician'};{'Rayleigh'};{'Nakagami'}];
-% Test KS (h = 0, não rejeita H0 e os dados podem ser da distribuição especificada;
-% k é o maior diferença engre a CDF dos dados e da distribuição especificada. Quanto menor k, melhor o fit)
-for iw = 1:length(vtW)
-    disp(' ')
-    disp(['Janela W = ' num2str(vtW(iw)) ]);
-    for ik = 1:length(sDistNames)
-        data = [sOut(iw).vtEnvNorm]';
-        pd = fitdist(data,sDistNames{ik});
-        x = linspace(min(data),max(data),length(data));
-        tCDF = [x' cdf(pd,x)'];
-        [h,p,k,c] = kstest(data,'CDF',tCDF);
-        sKtest(ik,iw).h = h;
-        sKtest(ik,iw).p = p;
-        sKtest(ik,iw).k = k;
-        sKtest(ik,iw).c = c;
-        disp(['   Distribuição ' sDistNames{ik} ': k = ' num2str(k) ', p-value = ' num2str(p)]);
-        % Resultado do teste KS
-        if (h == 0)
-            disp('     h = 0 => Não rejeita a hipótese H0 com nível de significância $\alpha$ = 5% (p > 0.05).');
-        elseif (h == 1)
-            disp('     h = 1 => Rejeita a hipótese H0 com nível de significância $\alpha$ = 5% (p < 0.05).');
-        end
-    end
-    
-end
+% sDistNames = [{'Weibull'};{'Rician'};{'Rayleigh'};{'Nakagami'}];
+% % Test KS (h = 0, não rejeita H0 e os dados podem ser da distribuição especificada;
+% % k é o maior diferença engre a CDF dos dados e da distribuição especificada. Quanto menor k, melhor o fit)
+% for iw = 1:length(vtW)
+%     disp(' ')
+%     disp(['Janela W = ' num2str(vtW(iw)) ]);
+%     for ik = 1:length(sDistNames)
+%         data = [sOut(iw).vtEnvNorm]';
+%         pd = fitdist(data,sDistNames{ik});
+%         x = linspace(min(data),max(data),length(data));
+%         tCDF = [x' cdf(pd,x)'];
+%         [h,p,k,c] = kstest(data,'CDF',tCDF);
+%         sKtest(ik,iw).h = h;
+%         sKtest(ik,iw).p = p;
+%         sKtest(ik,iw).k = k;
+%         sKtest(ik,iw).c = c;
+%         disp(['   Distribuição ' sDistNames{ik} ': k = ' num2str(k) ', p-value = ' num2str(p)]);
+%         % Resultado do teste KS
+%         if (h == 0)
+%             disp('     h = 0 => Não rejeita a hipótese H0 com nível de significância $\alpha$ = 5% (p > 0.05).');
+%         elseif (h == 1)
+%             disp('     h = 1 => Rejeita a hipótese H0 com nível de significância $\alpha$ = 5% (p < 0.05).');
+%         end
+%     end
+%     
+% end
 

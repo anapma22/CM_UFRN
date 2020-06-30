@@ -1,37 +1,36 @@
-%vetor de frequências da portadora MHz.
+close all;clear all;clc;
+% vetor de frequências da portadora MHz.
 vtFc = [800 900 1800 1900 2100];
-%vetor dos raios, começa em 1000, é incrementado a cada 10 e termina em 12000.
+% vetor dos raios, começa em 1000, é incrementado a cada 10 e termina em 12000.
 vtdR = [1000:10:12000]; 
 
-for iFc = 1:length(vtFc) %for para percorrer o vetor das frequência, vai ser feito 5x.
-    %dFc recebe a posição atual do vtFc.
+for iFc = 1:length(vtFc) % for para percorrer o vetor das frequência, vai ser feito 5x.
+    % dFc recebe a posição atual do vtFc.
     dFc = vtFc(iFc);   
-    vtdOutRate = [0]; %vetor dos dOutRate, deve ser zerado a cada nova frequência.
-    vtdRdOutRate = [0]; %vetor dos raios que acompanham diferentes valores de dOutRates, tb devem ser zerados a cada nova frequência.
-    
-    for idR = 1:length(vtdR) %for para percorrer o vetor dos raios (vtdR).
+    vtdOutRate = [0]; % vetor dos dOutRate, deve ser zerado a cada nova frequência.
+    vtdRdOutRate = [0]; % vetor dos raios que acompanham diferentes valores de dOutRates, tb devem ser zerados a cada nova frequência.
+    for idR = 1:length(vtdR) % for para percorrer o vetor dos raios (vtdR).
         dR = vtdR(idR); 
-        %Cálculos de outras variáveis que dependem dos parâmetros de entrada.
-        dPasso = ceil(dR/50);  %Resolução do grid: distância entre pontos de medição.
-        dRMin = dPasso;  %Raio de segurança.
-        dIntersiteDistance = 2*sqrt(3/4)*dR;  %Distância entre ERBs (somente para informação).
-        dDimX = 5*dR;  %Dimensão X do grid.
-        dDimY = 6*sqrt(3/4)*dR; %Dimensão Y do grid.
-        dPtdBm = 57; %EIRP (incluindo ganho e perdas).
-        dPtLinear = 10^(dPtdBm/10)*1e-3;  %EIRP em escala linear.
-        dSensitivity = -104; %Sensibilidade do receptor em dBm.
-        dHMob = 1.8;   %Altura do receptor.
-        dHBs = 30;  %Altura do transmissor.
-    
-        dAhm = 3.2*(log10(11.75*dHMob)).^2 - 4.97; %Modelo Okumura-Hata: Cidade grande e fc >= 300MHz.
-                                                   %Modelo COST Hata: Cidade grande e fc >= 300MHz.
+        % Cálculos de outras variáveis que dependem dos parâmetros de entrada.
+        dPasso = ceil(dR/50);  % Resolução do grid: distância entre pontos de medição.
+        dRMin = dPasso;  % Raio de segurança.
+        dIntersiteDistance = 2*sqrt(3/4)*dR;  % Distância entre ERBs (somente para informação).
+        dDimX = 5*dR;  % Dimensão X do grid.
+        dDimY = 6*sqrt(3/4)*dR; % Dimensão Y do grid.
+        dPtdBm = 57; % EIRP (incluindo ganho e perdas).
+        dPtLinear = 10^(dPtdBm/10)*1e-3;  % EIRP em escala linear.
+        dSensitivity = -104; % Sensibilidade do receptor em dBm.
+        dHMob = 1.8;   % Altura do receptor.
+        dHBs = 30;  % Altura do transmissor.
+        dAhm = 3.2*(log10(11.75*dHMob)).^2 - 4.97; % Modelo Okumura-Hata: Cidade grande e fc >= 300MHz.
+                                                   % Modelo COST Hata: Cidade grande e fc >= 300MHz.
         % Vetor com posições das BSs (grid Hexagonal com 7 células, uma célula central e uma camada de células ao redor)
         vtBs = [0];
         dOffset = pi/6;
         for iBs = 2:7
             vtBs = [vtBs dR*sqrt(3)*exp(j*((iBs-2)*pi/3 + dOffset))];
         end
-        vtBs = vtBs + (dDimX/2 + j*dDimY/2); %Ajuste de posição das bases (posição relativa ao canto inferior esquerdo).
+        vtBs = vtBs + (dDimX/2 + j*dDimY/2); % Ajuste de posição das bases (posição relativa ao canto inferior esquerdo).
     
         % Matriz de referência com posição de cada ponto do grid (posição relativa ao canto inferior esquerdo).
         dDimY = ceil(dDimY+mod(dDimY,dPasso));  % Ajuste de dimensão para medir toda a dimensão do grid.
@@ -57,10 +56,10 @@ for iFc = 1:length(vtFc) %for para percorrer o vetor das frequência, vai ser fei
             mtPowerFinaldBm = max(mtPowerFinaldBm,mtPowerEachBSdBm); 
         end
 
-        %(mtPowerFinaldBm < dSensitivity) retorna uma matriz 261x251 de 1s e 0s.
-        %find(mtPowerFinaldBm < dSensitivity) retorna um vetor com 37755. k = find(X) returns a vector containing the linear indices of each nonzero element in array X.
-        %numel: Number of array elements.
-        %If X is a multidimensional array, then find returns a column vector of the linear indices of the result.
+        % (mtPowerFinaldBm < dSensitivity) retorna uma matriz 261x251 de 1s e 0s.
+        % find(mtPowerFinaldBm < dSensitivity) retorna um vetor com 37755. k = find(X) returns a vector containing the linear indices of each nonzero element in array X.
+        % numel: Number of array elements.
+        % If X is a multidimensional array, then find returns a column vector of the linear indices of the result.
     
         % Outage (limite 10%).
         dOutRate = 100*length(find(mtPowerFinaldBm < dSensitivity))/numel(mtPowerFinaldBm);

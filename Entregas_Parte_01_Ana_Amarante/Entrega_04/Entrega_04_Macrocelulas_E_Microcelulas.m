@@ -41,7 +41,6 @@ dDimX = ceil(dDimXOri+mod(dDimXOri,dPasso));  %Ajuste de dimensão para medir tod
 [mtPosx,mtPosy] = meshgrid(0:dPasso:dDimX, 0:dPasso:dDimY);
 mtPontosMedicao = mtPosx + j*mtPosy;
 
-
 for idFc = 1: length(dFc)
     % Zerando os valores de outage 
     vtdOutRate = [0];
@@ -93,26 +92,22 @@ for idFc = 1: length(dFc)
        end
    end
 
-    % Plot da área de outage para macrocélulas e microcélulas com outage
+   % Plot da área de outage para macrocélulas e microcélulas com outage
+   figure;
+   pcolor(mtPosx,mtPosy,mtOutRate);
+   colormap (gray); 
+   fDrawDeploy(dR,vtBs);
+   axis equal;
+   legend('Área de outage', 'Location','southeast');
+   title(['Macrocélulas + Microcélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
     
-        % Plot da área de outage para macrocélulas
-    figure;
-    pcolor(mtPosx,mtPosy,mtOutRate);
-%     c = gray; % Como inverter as cores do colormap: https://www.mathworks.com/help/matlab/ref/gray.html
-%     c = flipud(c);    
-    colormap (gray); % Caso nenhum dos casos acima, a maior área será de potência maior que a mínima
-    colorbar;
-    fDrawDeploy(dR,vtBs);
-    axis equal;
-    title(['Macrocélulas + Microcélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
-    
-    % Plot da mtPowerFinaldBm final
-    figure;
-    pcolor(mtPosx,mtPosy,mtPowerFinaldBm);
-    colormap hsv;
-    colorbar;
-    fDrawDeploy(dR,vtBs);
-    fDrawDeploy(dRMicro,vtBsMicro);
-    axis equal;
-    title(['Potência final em dBm - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
+   % Plot da mtPowerFinaldBm final
+   figure;
+   pcolor(mtPosx,mtPosy,mtPowerFinaldBm);
+   colormap hsv;
+   colorbar;
+   fDrawDeploy(dR,vtBs);
+   fDrawDeploy(dRMicro,vtBsMicro);
+   axis equal;
+   title(['Potência final em dBm - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
 end

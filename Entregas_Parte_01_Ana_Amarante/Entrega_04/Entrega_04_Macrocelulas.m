@@ -1,3 +1,4 @@
+close all;clear all;clc;
 % Para isso, ainda sem as microcélulas, monte um REM somente de duas cores, identificando: 
 % (i) a área de Outage do mapa (cor 1); e (ii) área com potência maior que a mínima (cor 2). 
 % REMs de macrocélulas
@@ -9,7 +10,7 @@ dPasso = 10; % Resolução do grid: distância entre pontos de medição
 dRMin = dPasso; % Raio de segurança
 dIntersiteDistance = 2*sqrt(3/4)*dR;  % Distância entre ERBs (somente para informação)
 dDimXOri = 5*dR;  % Dimensão X do grid
-dDimYOri = 6*sqrt(3/4)*dR;  %D imensão Y do grid
+dDimYOri = 6*sqrt(3/4)*dR;  % Dimensão Y do grid
 dPtdBm = 21; % EIRP (incluindo ganho e perdas)
 dPtLinear = 10^(dPtdBm/10)*1e-3; % EIRP em escala linear
 dHMob = 1.5; %A ltura do receptor
@@ -72,9 +73,9 @@ for idFc = 1: length(dFc)
     figure;
     pcolor(mtPosx,mtPosy,mtOutRate);
     colormap (gray); % Caso nenhum dos casos acima, a maior área será de potência maior que a mínima
-    colorbar;
     fDrawDeploy(dR,vtBs);
     axis equal;
+    legend('Área de outage', 'Location','southeast');
     title(['Macrocélulas com Outage - Frequência  = ' num2str(dFc(idFc)) ' MHz']);
     
     % Plot da mtPowerFinaldBm final
