@@ -13,11 +13,12 @@ Identificar as linhas por legendas e cores diferentes. *ok*
 A curvas devem ser feitas em função da distância percorrida na medição. Use W = 5. *ok, alterei o vtW = [5]; % Definição dos valores de W*
 
 2. Fazer a estimativa para os seguintes valores da janela W = 2, 5, 10. Fazer uma tabela com o seguinte formato:
+
 |  Janela | Desvio padrão do sombreamento estimado  | Média do sombreamento estimado  | Expoente de perda de percurso estimado  |
 |:-:|:-:|:-:|:-:|
-|  W = 2   | 6.3304 |  0.37393 |  3.4528 |
-|  W = 5   | 6.2749 |  0.44941 |  3.4529 |
-|  W = 10  | 6.2275 |  0.51562 |  3.4531 |
+|  W = 2   | 5.9232 |  0.37974 |  4.2061 |
+|  W = 5   | 5.8648 |  0.45444 |  4.2063 |
+|  W = 10  | 5.8161 |  0.51828 |  4.2069 |
 
 Canal real:
    Média do sombreamento: 0.15697

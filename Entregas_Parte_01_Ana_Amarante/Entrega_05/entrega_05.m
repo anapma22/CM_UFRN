@@ -5,7 +5,7 @@ addpath('.\fitmethis')
 % Parâmetros para geração do canal real
 sPar.d0 = 5;                     % distância de referência d0
 sPar.P0 = 0;                     % Potência medida na distância de referência d0 (em dBm)
-sPar.nPoints = 10000;            % Número de amostras da rota de medição
+sPar.nPoints = 50000;            % Número de amostras da rota de medição
 sPar.totalLength = 100;          % Distância final da rota de medição
 sPar.n = 4;                      % Expoente de perda de percurso
 sPar.sigma = 6;                  % Desvio padrão do shadowing em dB
