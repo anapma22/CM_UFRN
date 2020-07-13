@@ -1,0 +1,28 @@
+Objetivos
+    Entender a modelagem da multiplexação OFDM;
+    Entender o processo de ortogalização entre subportadoras OFDM;
+    Entender a modelagem da demultiplexação OFDM;
+    Demonstrar o processo de demultiplexação OFDM em canais AWGN.
+
+A entrega devem compor um único arquivo zip com os códigos, o mini-relatório e um arquivo chamado README.txt, indicando como rodar o código produzido por você (produza um código autocontido, no qual o usuário deva rodar um único script para chegar nos resultados desejados). O mini-relatório deve ser técnico (análise dos resultados), mas pode ser administrativo (voltado a comentários sobre a execução do projeto). O arquivo zip deve ser entregue via SIGAA.
+
+Faz parte da entrega a produção de um vídeo no youtube, de no máximo 5 minutos, contendo uma descrição do relatório e do código implementado (explicar brevemente o que foi feito, mostrar as formulações, mostrar como rodar o código e os gráficos gerados). O link do vídeo deve ser informado no mini-relatório. O vídeo é parte bem importante da avaliação.
+
+# Hands-on 1: Multiplexação OFDM (ortogonalidade, transmissão e recepção, desempenho em canal AWGN)
+
+## Transmissão digital por multiplexação de multiportadoras
+
+## Prática 1: Divisão na frequência e ortogonalidade
+Passo 01: Abra um script no Matlab, salve-o como handson10_1.m.
+Aqui é feito a comprovação da ortogonalidade.
+
+
+## Prática 2: Transmissão de um sinal OFDM
+O experimento dessa prática consiste em gerar um sinal OFDM x com 100 bits pseudoaleatórios, modulação 16-QAM, T=50 segundos e Ts=2 segundos. Desejamos mostrar a forma de onda de x(t) e, em seguida, computar os valores de xn.
+
+## Prática 3: Recepção OFDM
+Considere o mesmo sinal gerado na Prática 2, mas supondo que o sinal enviado foi corrompido por um ruído aditivo gaussiano branco (AWGN) de média zero e variância σ2=2.
+
+Quanto maior a variância do ruído, mais espalhados se encontram os sinais recebidos, e maiores são as chances de obtermos erros no bloco de decisão.
+
+# Entrega 01: loopback OFDM em canais AWGN
