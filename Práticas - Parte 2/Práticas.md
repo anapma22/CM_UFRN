@@ -35,3 +35,18 @@ Faça um loopback de tranmissão e recepção OFDM similar a Prática 3 em Pytho
 2. Usar as funções ifft e fft para multiplexar (Tx) e demultiplexar (Rx);
 3. Fazer o gráfico da BER vs Eb/No para com OFDM e, no mesmo gráfico, o gráfico da Pe vs Eb/No (fórmula teórica) da modulação BPSK e 16-QAM sem OFDM.
 
+
+Se você tem Eb/N0 e precisa achar N0, basta então calcular Eb.
+Eb pode ser interpretado como a potência do sinal, porém deve ser normalizado para cada símbolo para que seja encontrado a potência de um único símbolo, ao invés do sinal todo. 
+Note que é importante que a potência total do sinal também esteja normalizada. Caso contrário, o ruído inserido pode ser bem maior do que o correto.
+
+https://en.wikipedia.org/wiki/Eb/N0
+http://www.eletrica.ufpr.br/evelio/TE111/Eb_N0.pdf
+https://paginas.fe.up.pt/~sam/Tele2/apontamentos/Modul_7.pdf p7
+https://pt.wikipedia.org/wiki/Rela%C3%A7%C3%A3o_sinal-ru%C3%ADdo
+http://www.decom.fee.unicamp.br/~baldini/EE881/Cap6.pdf
+
+
+
+A variancia da pra calcular pela fórmula, mas pra isso precisa calcular o ruído e pra calcular o ruído precisa saber como calcula o N0, mas não tem N0, então precisa achar N0 a partir de Eb.
+Como calcular o Eb? Temos o Eb/N0
