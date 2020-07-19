@@ -11,27 +11,30 @@ K = T/Ts;                     % Número de subportadoras independentes
 N = 2*K;                      % DFT de N pontos
 EbNodB = 0:1:14;              % Vetor de EbNo2  (energy per bit to noise power spectral density ratio) is a normalized signal-to-noise ratio (SNR) measure
 EbNo = 10.^(EbNodB/10);      % Eb/No em escala linear
-Eb_bpsk = 1;                  % Energia de bit para o BPSK
-No2_bpsk = Eb_bpsk *10.^(-EbNodB/10);   % Potência de ruído (Proakis)
-Nbps = [1 4];                 % Bits por segundo que varia para cada modulação
-M = 2.^Nbps;
-fs= 1/Ts;
+% Eb_bpsk = 1;                  % Energia de bit para o BPSK
+% No2_bpsk = Eb_bpsk *10.^(-EbNodB/10);   % Potência de ruído (Proakis)
+M = [2 16];
+k_qam = log2(16);
+theoreticalBER = [];
+theoreticalBER_bpsk = [];
 
-for i=1:length(Nbps) 
-    if Nbps(i) == 1
-        Pe = qfunc(sqrt(2*EbNo)); %(https://www.mathworks.com/help/comm/ref/qfunc.html)
-        theoreticalBER = Pe;
-        figure (1)
-        plot(EbNodB,log10(theoreticalBER),'c*');
-        hold on
-    else
-        Pe = 2.*(1-(1/sqrt(M(i)))).*erfc(sqrt(3*EbNo/(2*(M(i)-1))));
-        theoreticalBER = 1/2.*Pe;
-        figure (1)
-        plot(EbNodB,log10(theoreticalBER),'m*');
-        hold on
+for ik = 1:length(EbNo) 
+    i = 2;
+    for i=2:2:4
+        if i == 4 % 16-QAM
+            theoreticalBER(ik) = (4/k_qam)*(1-1/sqrt(16))*(qfunc(sqrt(3*k_qam*EbNo(ik)/(16-1)))); %(http://www.ene.unb.br/andre/teaching/files/ComDig/Apostila/Cap%2003%20Desempenho%20em%20Canal%20Ruidoso.pdf, eq 97)
+        else % BPSK
+            theoreticalBER_bpsk(ik) = qfunc(sqrt(2*EbNo(ik))); %(https://www.mathworks.com/help/comm/ref/qfunc.html)
+        end
     end
 end
+figure (1)
+plotBER = semilogy(EbNodB,theoreticalBER,'r--o');
+hold on
+figure (1)
+plotBER = semilogy(EbNodB,theoreticalBER_bpsk,'b--o');
+hold on
+
 
 %------------- 16-QAM --------------------------------
  for ik = 1:length(EbNodB) 
@@ -58,8 +61,8 @@ end
         xt=ifft(xn,[],N); %(https://www.mathworks.com/help/matlab/ref/ifft.html)
         % returns the inverse Fourier transform along the dimension dim. For example, if Y is a matrix, then ifft(Y,n,2) returns the n-point inverse transform of each row.
     end
-    Eb = (1/sqrt(10))*dataIn; % normalization of energy to 1 (https://www.mathworks.com/matlabcentral/fileexchange/19403-symbol-error-rate-for-16qam-in-awgn-channel)
-    No2 = Eb *10.^(-EbNodB(ik)/10);   % Potência de ruído (Proakis)
+    Eb = ((sum(xn*xn'))/length(xn));%(1/sqrt(10))*dataIn; % normalization of energy to 1 (https://www.mathworks.com/matlabcentral/fileexchange/19403-symbol-error-rate-for-16qam-in-awgn-channel)
+    No2(ik) = Eb *10.^(-EbNodB(ik)/10);   % Potência de ruído (Proakis)
     noise = sqrt((No2(ik))/2)*randn(1,N)+1i*sqrt((No2(ik))/2)*randn(1,N); % Influência no eixo imaginário e real, isto é, influencia na amplitude e na fase do sinal
     %noise=1/sqrt(2)*(randn(1,length(ofdm_signal))+1i*randn(1,length(ofdm_signal)));
     % Sinal recebido amostrado para 16-QAM
@@ -104,7 +107,8 @@ end
     disp(['16-QAM: Para Eb/No de ', num2str(EbNodB(ik)),'dB, a variância é ', num2str(variance)]);
     % Contagem de erro para 16-QAM
     error = length(find(Z(1,2:K)-X(1,2:K))); % find(X) returns a vector containing the linear indices of each nonzero element in array X.
-    BER(ik)=error/n_bits; % Calculo da BER 
+    BER(ik)=error/n_bits; % Calculo da BER para 16 - QAM
+    % nBitErr(ii) = size(find([ipBitRe- ipBinHatRe]),1) + size(find([ipBitIm - ipBinHatIm]),1) ;
     %     Plots para 16-QAM
 %     scatterplot(Y) % Círculos azuis, é a constelação de Yk
 %     hold on
@@ -112,9 +116,8 @@ end
 %     hold off
 %     title(['Modulação 16-QAM: Sinal com Eb/No de ', num2str(EbNodB(ik)), 'dB']);
  end
- 
 figure(1)
-plot(EbNodB,log10(BER),'b--o');
+plotBER = semilogy(EbNodB,BER,'m*'); 
 hold on
 %---------------------------------------------------
  
@@ -143,7 +146,9 @@ for ik = 1:length(EbNodB)
         xt_bpsk=ifft(xn_bpsk,[],N); %(https://www.mathworks.com/help/matlab/ref/ifft.html)
         % returns the inverse Fourier transform along the dimension dim. For example, if Y is a matrix, then ifft(Y,n,2) returns the n-point inverse transform of each row.
     end
-    noise_bpsk = sqrt((No2(ik))/2)*randn(1,N)+1i*sqrt((No2(ik))/2)*randn(1,N); % Influência no eixo imaginário e real, isto é, influencia na amplitude e na fase do sinal   
+    Eb_bpsk = ((sum(xn_bpsk*xn_bpsk'))/length(xn_bpsk));%(1/sqrt(10))*dataIn; % normalization of energy to 1 (https://www.mathworks.com/matlabcentral/fileexchange/19403-symbol-error-rate-for-16qam-in-awgn-channel)
+    No2_bpsk(ik) = Eb *10.^(-EbNodB(ik)/10);   % Potência de ruído (Proakis)
+    noise_bpsk = sqrt((No2_bpsk(ik))/2)*randn(1,N)+1i*sqrt((No2_bpsk(ik))/2)*randn(1,N); % Influência no eixo imaginário e real, isto é, influencia na amplitude e na fase do sinal   
     % Sinal recebido amostrado para BPSK
     rn_bpsk = xt_bpsk + noise_bpsk; % sinal recebido amostrado  para bpsk
     % Discrete Fourier Transform (DFT) de rn para BKPS - Demodulação
@@ -163,7 +168,7 @@ for ik = 1:length(EbNodB)
     variance_bpsk = var(noise_bpsk(:)); %sum(find(Z_bpsk(1,2:K)-X_bpsk(1,2:K)))/n_bits;    
     disp(['BPSK:   Para Eb/No de ', num2str(EbNodB(ik)),'dB, a variância é ', num2str(variance_bpsk)]);   
     % Contagem de erro para BPSK
-    error_bpsk = length(find(Z(1,2:K)-X(1,2:K)));
+    error_bpsk = length(find(Z_bpsk(1,2:K)-X_bpsk(1,2:K)));
     BER_bpsk(ik)=error_bpsk/n_bits; % Calculo da BER
         
 %     Plots BPSK
@@ -176,11 +181,11 @@ for ik = 1:length(EbNodB)
 end
 
 figure(1)
-plot(EbNodB,log10(BER_bpsk),'r--o');
+plotBER = semilogy(EbNodB,BER_bpsk,'c*');
 hold on
 grid on, hold on;
 xlabel('Eb/No (dB)')
 ylabel('BER')
-legend({'BER teórica - BPSK sem OFDM','BER teórica - 16-QAM sem OFDM','BER simulada - 16-QAM com OFDM','BER simulada - BPSK com OFDM'},'Location','southwest');
+legend({'BER teórica - 16-QAM sem OFDM','BER teórica - BPSK sem OFDM','BER simulada - 16-QAM com OFDM','BER simulada - BPSK com OFDM'},'Location','southwest');
 %---------------------------------------------------
     
