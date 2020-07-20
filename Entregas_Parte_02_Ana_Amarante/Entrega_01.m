@@ -139,7 +139,6 @@ for ik = 1:length(EbNodB)
         end
     end
     EbPSD_bpsk(ik) = ((sum(xn_bpsk*xn_bpsk'))/length(xn_bpsk)); %PSD
-    xnNormalized_bpsk = xn/sqrt(EbPSD_bpsk(ik)); %normalização do sinal
     % Construindo xt para 16-QAM, para o TX
     xt_bpsk=zeros(1, T+1);
     for t=0:T
