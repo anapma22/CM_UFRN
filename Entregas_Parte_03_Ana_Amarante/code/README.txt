@@ -1,0 +1,1 @@
+Lendo as instruções desse arquivo, um usuário conseguirá rodar seu código e obter os gráficos do seu relatório. Isso precisa ser feito sem consulta ao projetista do código (você) e é um item muito importante da avaliação final do projeto;
