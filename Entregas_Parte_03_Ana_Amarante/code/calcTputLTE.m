@@ -1,11 +1,9 @@
-% function calcTputLTE_ = calcTputLTE(MCS, BW, MIMO, eqtab, prefic)
-
 clear all; clc; close all;
+
 % Carregando as tabelas em .csv
-% MCS_TBS = readtable('MCS_TBS.csv', 'HeaderLines',1);  % Pula a primeira linha do csv
-% TBS_PRB = readtable('TBS_PRB.csv');  % Pula a primeira linha do csv
-MCS_TBS = csvread('MCS_TBS.csv');%, 'HeaderLines',1);  % Pula a primeira linha do csv
-TBS_PRB = csvread('TBS_PRB.csv');  % Pula a primeira linha do csv
+MCS_TBS = csvread('MCS_TBS.csv'); % Tabela padronizada do Release 10
+TBS_PRB = csvread('TBS_PRB.csv'); % Tabela padronizada do Release 10
+MCS_Mod_CodRate = csvread('MCS_Mod_CodRate.csv'); % Tabela não padronizada pelo 3GPP
 
 % Parâmetros de entrada do LTE
 BW = input('Digite a frequência em MHz: ');
@@ -36,13 +34,9 @@ elseif BW == 20
 end
 
 % Cálculo do TBS
-if MCS == 0 % Por questões me adaptação ao código a primeira linha do MCS_TBS.csv foi removida e está representada neste if
-    TBS = 0;
-else
-    for i=1:MCS 
-        if MCS == i;
-            TBS = MCS_TBS(i,2);
-        end
+for i=1:(MCS+1)
+    if i == (MCS+1)
+        TBS = MCS_TBS(MCS+1,2);
     end
 end
 
@@ -61,98 +55,17 @@ end
 
 % Voltando aos valores originais
 TBS = TBS - 2;
-PRBs = PRBs -1;
+PRBs = PRBs - 1;
 
 % Cálculo da taxa de transmissão do LTE (Release 10)  - pela tabela
 Tput_tab = Nbits * (CP/7*10^3) * MIMO * CA;
 
-if(MCS==0)
-    Modulation = 2;
-    CodRate = 0.1171875;
-elseif(MCS==1)
-    Modulation = 2;
-    CodRate = 0.15332031;
-elseif(MCS==2)
-    Modulation = 2;
-    CodRate = 0.18847656;
-elseif(MCS==3)
-    Modulation = 2;
-    CodRate = 0.24511719;
-elseif(MCS==4)
-    Modulation = 2;
-    CodRate = 0.3007125;
-elseif(MCS==5)
-    Modulation = 2;
-    CodRate = 0.37011719;
-elseif(MCS==6)
-    Modulation = 2;
-    CodRate = 0.43847656;
-elseif(MCS==7)
-    Modulation = 2;
-    CodRate = 0.51367188;
-elseif(MCS==8)
-    Modulation = 2;
-    CodRate=0.58789063;
-elseif(MCS==9)
-    Modulation = 2;
-    CodRate = 0.66308594;
-elseif(MCS==10)
-    Modulation = 4;
-    CodRate = 0.33203125;
-elseif(MCS==11)
-    Modulation = 4;
-    CodRate = 0.36914063;
-elseif(MCS==12)
-    Modulation = 4;
-    CodRate = 0.42382813;
-elseif(MCS==13)
-    Modulation = 4;
-    CodRate = 0.47851563;
-elseif(MCS==14)
-    Modulation = 4;
-    CodRate = 0.54003906;
-elseif(MCS==15)
-    Modulation = 4;
-    CodRate = 0.6015625;
-elseif(MCS==16)
-    Modulation = 4;
-    CodRate = 0.64257813;
-elseif(MCS==17)
-    Modulation = 6;
-    CodRate = 0.42773438;
-elseif(MCS==18)
-    Modulation = 6;
-    CodRate = 0.45507813;
-elseif(MCS==19)
-    Modulation = 6;
-    CodRate = 0.50488281;
-elseif(MCS==20)
-    Modulation = 6;
-    CodRate = 0.55371094;
-elseif(MCS==21)
-    Modulation = 6;
-    CodRate = 0.6015625;
-elseif(MCS==22)
-    Modulation = 6;
-    CodRate = 0.65039063;
-elseif(MCS==23)
-    Modulation = 6;
-    CodRate = 0.70214844;
-elseif(MCS==24)
-    Modulation = 6;
-    CodRate = 0.75390625;
-elseif(MCS==25)
-    Modulation = 6;
-    CodRate = 0.80273438;
-elseif(MCS==26)
-    Modulation = 6;
-    CodRate = 0.85253906;
-elseif(MCS==27)
-    Modulation = 6;
-    CodRate = 0.88867188;
-elseif(MCS==28)
-    Modulation = 6;
-    CodRate = 0.92578125;
+% Definir o valor da modulação e do CodRate
+for i=1:(MCS+1)
+    if i == (MCS+1)
+        Modulation = MCS_Mod_CodRate(MCS+1,2);
+        CodRate = MCS_Mod_CodRate(MCS+1,3);
+    end
 end
      
 if Modulation == 2
