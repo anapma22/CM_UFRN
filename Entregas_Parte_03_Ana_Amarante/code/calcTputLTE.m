@@ -69,7 +69,7 @@ for i=1:(MCS+1)
 end
      
 if Modulation == 2
-    QAM = 8;
+    QAM = 4;
 elseif Modulation == 4
     QAm = 16;
 else
