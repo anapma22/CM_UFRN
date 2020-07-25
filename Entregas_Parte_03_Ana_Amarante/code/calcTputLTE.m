@@ -15,11 +15,11 @@ MIMO = input('Digite o MIMO da sequinte forma: Para um MIMO nxn, digite apenas o
 CA= input('Digite o número de CA: '); 
 
 % Definição do valor de CP
-% if CP == 'normal'   
-%     CP = 7; 
-% else
-%     CP = 6;
-% end
+if CP == 7  % Número de RE 
+   RE=7*12; 
+else
+   RE=6*12; % Número de simbolos
+end
 % Definição dos valores de PRBs de acordo com a BW 
 if BW == 1.4
     PRBs = 6;
@@ -83,12 +83,12 @@ elseif(MCS==4)
     CodRate = 0.3007125;
 elseif(MCS==5)
     Modulation = 2;
-    CodRate = 0.37011719
+    CodRate = 0.37011719;
 elseif(MCS==6)
     Modulation = 2;
     CodRate = 0.43847656;
 elseif(MCS==7)
-    Modulation=2;
+    Modulation = 2;
     CodRate = 0.51367188;
 elseif(MCS==8)
     Modulation = 2;
@@ -115,7 +115,7 @@ elseif(MCS==15)
     Modulation = 4;
     CodRate = 0.6015625;
 elseif(MCS==16)
-    Modulation  =4;
+    Modulation = 4;
     CodRate = 0.64257813;
 elseif(MCS==17)
     Modulation = 6;
@@ -154,6 +154,14 @@ elseif(MCS==28)
     Modulation = 6;
     CodRate = 0.92578125;
 end
-            
+     
+if Modulation == 2
+    QAM = 8;
+elseif Modulation == 4
+    QAm = 16;
+else
+    QAM = 64;
+end
+
 % Cálculo da taxa de transmissão do LTE (Release 10)  - pela fórmula
-Tput_form = BW * CP * PRBs * MIMO * CA * 0.75 * 12 * Modulation * CodRate/(0.5*0.001);
+Tput_form = CP * PRBs * MIMO * CA * 0.75 * 12 * Modulation * CodRate/(0.5*0.001);
