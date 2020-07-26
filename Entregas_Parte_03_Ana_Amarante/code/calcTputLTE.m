@@ -89,11 +89,11 @@ function Button_Calcular_Callback(hObject, eventdata, handles)
 % Carregando as tabelas em .csv
 MCS_TBS = csvread('MCS_TBS.csv'); % Tabela padronizada do Release 10
 TBS_PRB = csvread('TBS_PRB.csv'); % Tabela padronizada do Release 10
-MCS_Mod_CodRate = csvread('MCS_Mod_CodRate.csv'); % Tabela não padronizada pelo 3GPP
+MCS_Mod_CodRate = csvread('MCS_Mod_CodRate.csv'); % Tabela não padronizada pelo 3GPP, construida a partir das tabelas 1 e 2 que estão na pasta deste arquivo
 
 % Definição dos valores de PRBs de acordo com a BW 
 SelectBW = get(handles.Select_BW,'Value'); % Pega os valores do listbox da BW
-if SelectBW == 1 % BW == 1.4
+if SelectBW == 1     % BW == 1.4
     PRBs = 6;
 elseif SelectBW == 2 % BW == 3
     PRBs = 15;
@@ -111,19 +111,18 @@ guidata(hObject,handles);
 
 % Definição do valor de CP e RE
 SelectCP = get(handles.Select_CP,'Value'); % Pega os valores do listbox do CP
-if SelectCP == 1;     % CP normal Número de RE a ser exibido
+if SelectCP == 1;      % CP normal Número de RE a ser exibido
    RE=7*12;            % Número de RE
    CP=7;               % 7 simbolos do Cycle Prefix
-elseif SelectCP == 2; % CP estendido
+elseif SelectCP == 2;  % CP estendido
     RE=6*12;                
     CP=6;                       
 end
-% handles.MenuCP = MenuCP;
 handles.CP = CP;
 handles.RE = RE;
 guidata(hObject,handles);
 
-% Definição do valor da MCS
+% Definição do valor da MCS pelo listbox
 SelectMCS = get(handles.Select_MCS,'Value');
 MCS = SelectMCS;
 handles.MCS = MCS;
@@ -143,29 +142,29 @@ end
 handles.MIMO = MIMO;
 guidata(hObject,handles);
 
-% Definição do valor da Carrier Aggregation
+% Definição do valor da Carrier Aggregation pelo listbox
 SelectCA = get(handles.Select_CA,'Value');
 CA = SelectCA;
 handles.CA = CA;
 guidata(hObject,handles);
 
-% Cálculo do TBS
+% Cálculo do TBS, com base na tabela MCS_TBS.csv, a partir do valor de MCS
 for i=1:(MCS)
-    if i == (MCS)
-        TBS = MCS_TBS(MCS,2);
+    if i == (MCS) % Achou a linha da MCS selecionada
+        TBS = MCS_TBS(MCS,2); % TBS recebe a posição de linha da MCS selecionada, na coluna 2
     end
 end
 handles.TBS = TBS;
 guidata(hObject,handles);
 
-% Cálculo do Nbits
+% Cálculo do Nbits, com base na tabela TBS_PRB.csv, a partir do valor de TBS
 TBS = TBS + 2; % Necessário para que o matlab interprete como o valor de linhas com os dados equivalentes
 PRBs = PRBs +1; % Necessário para que o matlab interprete como o valor de colunas com os dados equivalentes
 for i=1:TBS 
     if TBS == i % Achou a linha com o valor do TBS
-        for j=1:PRBs % Percorre as colunas do valor do TBS
+        for j=1:PRBs % Percorre as colunas para achar o valor do PRB
             if PRBs == j;
-                Nbits = TBS_PRB(TBS,PRBs);
+                Nbits = TBS_PRB(TBS,PRBs); % Nbits recebe o valor da posição na linha correspondente do TBS e na coluna do PRB
             end
         end
     end
@@ -177,16 +176,15 @@ handles.Nbits = Nbits;
 guidata(hObject,handles);
 
 % Cálculo da taxa de transmissão do LTE (Release 10)  - pela tabela
-Tput_tab = Nbits * CP/7* 0.001 * MIMO * CA;
-
+Tput_tab = Nbits * CP/7 * MIMO * CA * 0.001;
 handles.Tput_tab = Tput_tab;
 guidata(hObject,handles);
 
-% Definir o valor da modulação e do CodRate
+% Definição o valor da modulação e da taxa de codificação, com base na tabela MCS_Mod_CodRate.csv que foi construída
 for i=1:(MCS)
     if i == (MCS)
-        Modulation = MCS_Mod_CodRate(MCS,2);
-        CodRate = MCS_Mod_CodRate(MCS,3);
+        Modulation = MCS_Mod_CodRate(MCS,2); % Modulação recebe o valor da posição da linha da MCS, na coluna 2
+        CodRate = MCS_Mod_CodRate(MCS,3); % Taxa de codificação recebe o valor da posição da linha da MCS, na coluna 3
     end
 end
 handles.Modulation = Modulation;
